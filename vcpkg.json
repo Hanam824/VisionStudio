@@ -1,0 +1,21 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+    "name": "vision-studio",
+    "version-semver": "0.1.0",
+    "description": "Cross-platform OCR & Image Processing Studio",
+    "dependencies": [
+        {
+            "name": "opencv4",
+            "default-features": false,
+            "features": [ "imgproc", "imgcodecs" ]
+        },
+        {
+            "name": "qt5-base",
+            "features": [ "widgets" ]
+        },
+        "ncnn",
+        "gtest"
+    ],
+    "overrides": [],
+    "builtin-baseline": "14da8d976f119dfcab9853755f92f6f388dc808b"
+}
