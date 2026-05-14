@@ -4,11 +4,7 @@
     "version-semver": "0.1.0",
     "description": "Cross-platform OCR & Image Processing Studio",
     "dependencies": [
-        {
-            "name": "opencv4",
-            "default-features": false,
-            "features": [ "imgproc", "imgcodecs" ]
-        },
+        "opencv4",
         "qt5-base",
         "ncnn",
         "gtest"
