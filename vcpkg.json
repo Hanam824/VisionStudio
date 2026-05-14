@@ -9,10 +9,7 @@
             "default-features": false,
             "features": [ "imgproc", "imgcodecs" ]
         },
-        {
-            "name": "qt5-base",
-            "features": [ "widgets" ]
-        },
+        "qt5-base",
         "ncnn",
         "gtest"
     ],
