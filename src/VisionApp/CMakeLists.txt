@@ -55,4 +55,12 @@ source_group("Resources" FILES ${VISIONAPP_RESOURCES})
 
 set_target_properties(VisionApp PROPERTIES
     OUTPUT_NAME "VisionStudio"
+    WIN32_EXECUTABLE ON
+    MACOSX_BUNDLE ON
+)
+
+# ── Install Rules ───────────────────────────────────────────────────────────
+install(TARGETS VisionApp
+    RUNTIME DESTINATION bin
+    BUNDLE DESTINATION .
 )

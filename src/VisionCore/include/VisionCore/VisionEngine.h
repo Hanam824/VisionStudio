@@ -11,7 +11,7 @@ namespace vision {
 // ── VisionEngine ────────────────────────────────────────────────────────────
 /// Concrete implementation of IVisionEngine.
 /// Delegates image work to ImageProcessor and inference to ncnn/ONNX.
-class VISIONCORE_API VisionEngine final : public IVisionEngine {
+class VisionEngine final : public IVisionEngine {
 public:
     VisionEngine();
     ~VisionEngine() override;

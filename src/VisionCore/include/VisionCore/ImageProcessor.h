@@ -11,7 +11,7 @@ namespace vision {
 /// Encapsulates all OpenCV-based image preprocessing operations.
 /// This class is internal to VisionCore and is NOT exposed across the DLL
 /// boundary — only IVisionEngine is public.
-class VISIONCORE_API ImageProcessor {
+class ImageProcessor {
 public:
     ImageProcessor()  = default;
     ~ImageProcessor() = default;

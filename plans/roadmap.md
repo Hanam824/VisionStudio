@@ -37,8 +37,8 @@
 - [x] Update `CMakePresets.json` to use `${sourceDir}/third-party/vcpkg/` toolchain
 - [x] Create `build.ps1` and `run_build.bat`
 - [x] Add RPATH settings for macOS/Linux in root `CMakeLists.txt`
-- [ ] Add installer/packaging (CPack: NSIS on Windows, DMG on macOS)
-- [ ] Add CI/CD pipeline (GitHub Actions)
+- [x] Add installer/packaging (CPack: NSIS on Windows, DMG on macOS)
+- [x] Add CI/CD pipeline (GitHub Actions)
 - [ ] Expand dark theme with custom icons and styling
 - [ ] Add batch/CLI mode for headless OCR processing
 - [x] Create `/docs/getting_started.md` — beginner guide (clone → build → run)

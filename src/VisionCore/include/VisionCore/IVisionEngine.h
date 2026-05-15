@@ -23,14 +23,14 @@ using LogCallback = std::function<void(LogLevel, const std::string&)>;
 
 // ── OCR Result ──────────────────────────────────────────────────────────────
 /// Holds a single recognized text region.
-struct VISIONCORE_API OcrResult {
+struct OcrResult {
     std::string text;          ///< Recognized text content.
     float       confidence;    ///< Confidence score [0.0, 1.0].
     int         x, y, w, h;   ///< Bounding box in image coordinates.
 };
 
 // ── Preprocessing Options ───────────────────────────────────────────────────
-struct VISIONCORE_API PreprocessOptions {
+struct PreprocessOptions {
     bool  grayscale          = true;   ///< Convert to grayscale first.
     bool  threshold          = true;   ///< Apply adaptive thresholding.
     int   thresholdBlockSize = 11;     ///< Block size for adaptive threshold.

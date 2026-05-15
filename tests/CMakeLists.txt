@@ -8,7 +8,7 @@ file(GLOB_RECURSE TEST_SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/*.cpp"
 )
 
-add_executable(VisionTests ${TEST_SOURCES})
+add_executable(VisionTests ${TEST_SOURCES} ../src/VisionCore/src/ImageProcessor.cpp)
 
 target_link_libraries(VisionTests
     PRIVATE

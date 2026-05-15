@@ -52,7 +52,16 @@ source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}/src"     PREFIX "Source Files" FI
 
 # Set output name
 set_target_properties(VisionCore PROPERTIES
-    OUTPUT_NAME "VisionCore"
-    VERSION     ${PROJECT_VERSION}
-    SOVERSION   0
+    OUTPUT_NAME        "VisionCore"
+    DEBUG_POSTFIX      "d"
+    VERSION            ${PROJECT_VERSION}
+    SOVERSION          0
 )
+
+# ── Install Rules ───────────────────────────────────────────────────────────
+install(TARGETS VisionCore
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+)
+install(DIRECTORY include/ DESTINATION include)

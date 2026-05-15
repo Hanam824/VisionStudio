@@ -121,12 +121,19 @@ void MainWindow::createDockWidgets() {
 
 bool MainWindow::loadVisionCore() {
     // Try to load VisionCore from the same directory as the executable.
-#ifdef _WIN32
-    m_coreLib.setFileName("VisionCore");
-#elif defined(__APPLE__)
-    m_coreLib.setFileName("libVisionCore");
+    // Debug builds use the "d" postfix (e.g. VisionCored.dll).
+#ifndef NDEBUG
+    #ifdef _WIN32
+        m_coreLib.setFileName("VisionCored");
+    #else
+        m_coreLib.setFileName("libVisionCored");
+    #endif
 #else
-    m_coreLib.setFileName("libVisionCore");
+    #ifdef _WIN32
+        m_coreLib.setFileName("VisionCore");
+    #else
+        m_coreLib.setFileName("libVisionCore");
+    #endif
 #endif
 
     if (!m_coreLib.load()) {
