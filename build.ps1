@@ -12,7 +12,17 @@ $Preset = if ($IsWindows -or $env:OS -eq "Windows_NT") { "windows-x64" }
 
 Write-Host ">>> Vision Studio Build | Preset: $Preset" -ForegroundColor Cyan
 
-# 2. Bootstrap vcpkg if needed
+# 2. Check and initialize vcpkg submodule if empty
+if (-not (Test-Path "./third-party/vcpkg/bootstrap-vcpkg.bat") -and -not (Test-Path "./third-party/vcpkg/bootstrap-vcpkg.sh")) {
+    Write-Host ">>> vcpkg submodule is empty! Initializing git submodules..." -ForegroundColor Yellow
+    git submodule update --init --recursive
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Failed to initialize git submodules. Are you inside a valid git repository?"
+        exit 1
+    }
+}
+
+# 3. Bootstrap vcpkg if needed
 if (-not (Test-Path "./third-party/vcpkg/vcpkg.exe") -and -not (Test-Path "./third-party/vcpkg/vcpkg")) {
     Write-Host ">>> Bootstrapping vcpkg..." -ForegroundColor Yellow
     if ($IsWindows -or $env:OS -eq "Windows_NT") {
@@ -22,16 +32,16 @@ if (-not (Test-Path "./third-party/vcpkg/vcpkg.exe") -and -not (Test-Path "./thi
     }
 }
 
-# 3. Configure
+# 4. Configure
 Write-Host ">>> Configuring..." -ForegroundColor Yellow
 cmake --preset $Preset
 
-# 4. Build Debug
+# 5. Build Debug
 $PresetPrefix = $Preset.Split('-')[0]
 Write-Host ">>> Building Debug..." -ForegroundColor Yellow
 cmake --build --preset "$PresetPrefix-debug" --parallel
 
-# 5. Build Release
+# 6. Build Release
 Write-Host ">>> Building Release..." -ForegroundColor Green
 cmake --build --preset "$PresetPrefix-release" --parallel
 
