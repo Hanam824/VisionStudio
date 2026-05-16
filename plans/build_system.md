@@ -198,3 +198,11 @@ if ($IsWindows -or $env:OS -eq "Windows_NT") { Pause }
 | Release | `VisionStudio.exe` | `VisionCore.dll` | `VisionCore.lib` |
 
 The `d` suffix on Debug builds comes from `CMAKE_DEBUG_POSTFIX "d"`.
+
+---
+
+## macOS Auto Dependencies
+
+To make the build experience frictionless for beginners on macOS, `run_build.sh` automatically checks for and installs system-level dependencies before `vcpkg` is bootstrapped.
+*   **Homebrew**: Installed automatically if not found.
+*   **Build Tools**: Automatically runs `brew install autoconf autoconf-archive automake libtool` as these are heavily relied upon by `vcpkg` dependencies (like `gperf`).

@@ -7,7 +7,7 @@ $ErrorActionPreference = "Stop"
 
 # 1. Detect platform
 $Preset = if ($IsWindows -or $env:OS -eq "Windows_NT") { "windows-x64" }
-          elseif ($IsMacOS) { "macos-arm64" }
+          elseif ($IsMacOS) { "macos-x64" }
           else { "linux-x64" }
 
 Write-Host ">>> Vision Studio Build | Preset: $Preset" -ForegroundColor Cyan
