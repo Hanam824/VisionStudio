@@ -7,8 +7,10 @@ $ErrorActionPreference = "Stop"
 
 # 1. Detect platform
 $Preset = if ($IsWindows -or $env:OS -eq "Windows_NT") { "windows-x64" }
-          elseif ($IsMacOS) { "macos-x64" }
-          else { "linux-x64" }
+          elseif ($IsMacOS) { 
+              if ((Get-CimInstance Win32_Processor).Architecture -eq 12 -or (uname -m) -match "arm64") { "macos-arm64" } else { "macos-x64" } 
+          }
+          else { "linux-deb-x64" }
 
 Write-Host ">>> Vision Studio Build | Preset: $Preset" -ForegroundColor Cyan
 
@@ -37,13 +39,12 @@ Write-Host ">>> Configuring..." -ForegroundColor Yellow
 cmake --preset $Preset
 
 # 5. Build Debug
-$PresetPrefix = $Preset.Split('-')[0]
-Write-Host ">>> Building Debug..." -ForegroundColor Yellow
-cmake --build --preset "$PresetPrefix-debug" --parallel
+# Write-Host ">>> Building Debug..." -ForegroundColor Yellow
+# cmake --build --preset "$Preset-debug" --parallel
 
 # 6. Build Release
 Write-Host ">>> Building Release..." -ForegroundColor Green
-cmake --build --preset "$PresetPrefix-release" --parallel
+cmake --build --preset "$Preset" --parallel
 
 Write-Host ">>> Done! Check /bin/Debug and /bin/Release" -ForegroundColor White
 if ($IsWindows -or $env:OS -eq "Windows_NT") { Pause }

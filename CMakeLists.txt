@@ -7,6 +7,16 @@ project(VisionStudio
     DESCRIPTION "Cross-platform OCR & Image Processing Studio"
 )
 
+# Limit configurations to Debug and Release for IDEs (makes .sln / Xcode simpler for beginners)
+if(CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Supported IDE configurations" FORCE)
+endif()
+
+# Default to Release for single-config generators (like Ninja/Make) if not specified
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+    set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Default build type" FORCE)
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)

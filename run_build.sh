@@ -13,15 +13,22 @@ echo
 
 # 1. Detect platform
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    PRESET="macos-x64"
+    if [[ "$(uname -m)" == "arm64" ]]; then
+        PRESET="macos-arm64"
+    else
+        PRESET="macos-x64"
+    fi
     # Ensure macOS Ventura 13 is the minimum supported version
     export MACOSX_DEPLOYMENT_TARGET="13.0"
 else
-    PRESET="linux-x64"
+    if command -v dpkg >/dev/null 2>&1; then
+        PRESET="linux-deb-x64"
+    elif command -v rpm >/dev/null 2>&1; then
+        PRESET="linux-rpm-x64"
+    else
+        PRESET="linux-deb-x64"
+    fi
 fi
-
-# Determine the preset prefix (e.g., macos or linux)
-PRESET_PREFIX="${PRESET%%-*}"
 
 echo -e "\033[36m>>> Vision Studio Build | Preset: $PRESET\033[0m"
 
@@ -73,11 +80,11 @@ else
 fi
 
 # 5. Build Debug
-echo -e "\033[33m>>> Building Debug...\033[0m"
-cmake --build --preset "${PRESET_PREFIX}-debug" --parallel
+# echo -e "\033[33m>>> Building Debug...\033[0m"
+# cmake --build --preset "${PRESET}-debug" --parallel
 
 # 6. Build Release
 echo -e "\033[32m>>> Building Release...\033[0m"
-cmake --build --preset "${PRESET_PREFIX}-release" --parallel
+cmake --build --preset "${PRESET}" --parallel
 
 echo -e "\033[37m>>> Done! Check build/$PRESET directories\033[0m"

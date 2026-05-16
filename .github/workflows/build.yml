@@ -15,13 +15,13 @@ jobs:
         include:
           - os: windows-latest
             preset: windows-x64
-            build_preset: windows-release
+            build_preset: windows-x64
           - os: macos-latest
             preset: macos-arm64
-            build_preset: macos-release
+            build_preset: macos-arm64
           - os: ubuntu-latest
-            preset: linux-x64
-            build_preset: linux-release
+            preset: linux-deb-x64
+            build_preset: linux-deb-x64
 
     runs-on: ${{ matrix.os }}
 
