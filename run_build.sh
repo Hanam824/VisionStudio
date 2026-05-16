@@ -51,7 +51,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     
     # Install vcpkg system requirements for macOS
     echo -e "\033[33m>>> Installing essential macOS build tools...\033[0m"
-    for pkg in autoconf autoconf-archive automake libtool; do
+    for pkg in autoconf autoconf-archive automake libtool libomp; do
         if ! brew list "$pkg" &> /dev/null; then
             brew install "$pkg"
         fi
