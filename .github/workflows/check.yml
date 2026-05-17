@@ -16,14 +16,14 @@ jobs:
         os: [windows-latest, macos-latest, ubuntu-latest]
         include:
           - os: windows-latest
-            preset: windows-x64
-            build_preset: windows-x64
+            preset: windows-x64-syntax-check
+            build_preset: windows-x64-syntax-check
           - os: macos-latest
-            preset: macos-arm64
-            build_preset: macos-arm64
+            preset: macos-arm64-syntax-check
+            build_preset: macos-arm64-syntax-check
           - os: ubuntu-latest
-            preset: linux-deb-x64
-            build_preset: linux-deb-x64
+            preset: linux-x64-syntax-check
+            build_preset: linux-x64-syntax-check
 
     runs-on: ${{ matrix.os }}
 
