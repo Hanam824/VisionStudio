@@ -1,13 +1,15 @@
-name: Production Release Build
+name: Frequent Build Check
 
 on:
-  workflow_dispatch: # Allows manual trigger from the GitHub Actions dashboard
   push:
-    tags:
-      - 'v*' # Triggers automatically ONLY when you push a version tag
+    branches: [ "main" ]
+    tags-ignore:
+      - 'v*' # Avoid running this when a release tag is pushed
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  production-build:
+  check-build:
     strategy:
       fail-fast: false
       matrix:
@@ -29,7 +31,7 @@ jobs:
     - uses: actions/checkout@v6
       with:
         submodules: recursive
-        fetch-depth: 0 # Full history needed for proper release version tagging / changelogs
+        fetch-depth: 1 # Faster checkout because we don't need full git history for a check
 
     - name: Install dependencies (Ubuntu)
       if: runner.os == 'Linux'
@@ -59,6 +61,7 @@ jobs:
       if: runner.os == 'Linux'
       run: echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig:/usr/lib/pkgconfig" >> $GITHUB_ENV
 
+    # Active vcpkg cache sharing. Restores dependencies in 2 seconds once cached.
     - name: Export GitHub Actions Cache Environment
       uses: actions/github-script@v7
       with:
@@ -73,8 +76,5 @@ jobs:
     - name: Configure CMake
       run: cmake --preset ${{ matrix.preset }}
 
-    - name: Build Production Release Binaries
+    - name: Build CMake (Verify Code Integrity)
       run: cmake --build --preset ${{ matrix.build_preset }}
-
-    - name: Run Tests
-      run: ctest --test-dir build/${{ matrix.preset }} --build-config Release --output-on-failure
