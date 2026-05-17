@@ -56,6 +56,10 @@ jobs:
         fi
       shell: bash
 
+    - name: Set up PKG_CONFIG_PATH (Linux)
+      if: runner.os == 'Linux'
+      run: echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig:/usr/lib/pkgconfig" >> $GITHUB_ENV
+
     - name: Configure CMake
       run: cmake --preset ${{ matrix.preset }}
 
