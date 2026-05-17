@@ -119,8 +119,11 @@
             "displayName": "Windows x64 (Syntax Check)",
             "inherits": "windows-x64",
             "binaryDir": "${sourceDir}/build/windows-x64-syntax-check",
+            "environment": {
+                "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets/release-only"
+            },
             "cacheVariables": {
-                "CMAKE_CXX_FLAGS": "/W4 /WX"
+                "CMAKE_COMPILE_WARNING_AS_ERROR": "ON"
             }
         },
         {
@@ -128,8 +131,11 @@
             "displayName": "macOS arm64 (Syntax Check)",
             "inherits": "macos-arm64",
             "binaryDir": "${sourceDir}/build/macos-arm64-syntax-check",
+            "environment": {
+                "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets/release-only"
+            },
             "cacheVariables": {
-                "CMAKE_CXX_FLAGS": "-Wall -Wextra -Werror"
+                "CMAKE_COMPILE_WARNING_AS_ERROR": "ON"
             }
         },
         {
@@ -137,8 +143,11 @@
             "displayName": "Linux x64 (Syntax Check)",
             "inherits": "linux-x64",
             "binaryDir": "${sourceDir}/build/linux-x64-syntax-check",
+            "environment": {
+                "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets/release-only"
+            },
             "cacheVariables": {
-                "CMAKE_CXX_FLAGS": "-Wall -Wextra -Werror"
+                "CMAKE_COMPILE_WARNING_AS_ERROR": "ON"
             }
         }
     ],
