@@ -29,12 +29,22 @@ jobs:
 
     name: Check — ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
+    env:
+      VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+      VCPKG_FORCE_SYSTEM_BINARIES: "0"
 
     steps:
     - uses: actions/checkout@v6
       with:
         submodules: recursive
         fetch-depth: 0 # Full history needed because vcpkg manifest mode needs git history to resolve baselines
+
+    - name: Export GitHub Actions cache environment variables
+      uses: actions/github-script@v7
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
     - name: Set up MSVC environment (Windows)
       if: runner.os == 'Windows'
