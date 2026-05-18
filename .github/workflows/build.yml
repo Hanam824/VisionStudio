@@ -21,7 +21,7 @@ jobs:
             preset: ci-macos-arm64
             build_preset: ci-macos-arm64
           - name: macOS x64 (Intel)
-            os: macos-13
+            os: macos-26-intel
             preset: ci-macos-x64
             build_preset: ci-macos-x64
           - name: Linux x64 (.deb)
@@ -85,18 +85,6 @@ jobs:
         key: vcpkg-${{ matrix.preset }}-${{ hashFiles('vcpkg.json') }}
         restore-keys: |
           vcpkg-${{ matrix.preset }}-
-
-    # Layer 2: vcpkg binary caching as a fallback when Layer 1 misses.
-    - name: Export GitHub Actions Cache Environment
-      uses: actions/github-script@v7
-      with:
-        script: |
-          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-
-    - name: Set up vcpkg Binary Caching
-      shell: bash
-      run: echo "VCPKG_BINARY_SOURCES=clear;x-gha,readwrite" >> $GITHUB_ENV
 
     - name: Configure CMake
       run: cmake --preset ${{ matrix.preset }}
