@@ -175,7 +175,7 @@
         },
         {
             "name": "ci-linux-x64",
-            "hidden": true,
+            "displayName": "CI: Linux x64 (Ninja)",
             "inherits": "ci-ninja",
             "cacheVariables": {
                 "VCPKG_TARGET_TRIPLET": "x64-linux"
@@ -290,14 +290,9 @@
             "configurePreset": "ci-macos-x64"
         },
         {
-            "name": "ci-linux-deb-x64",
-            "displayName": "CI: Linux DEB",
-            "configurePreset": "ci-linux-deb-x64"
-        },
-        {
-            "name": "ci-linux-rpm-x64",
-            "displayName": "CI: Linux RPM",
-            "configurePreset": "ci-linux-rpm-x64"
+            "name": "ci-linux-x64",
+            "displayName": "CI: Linux x64",
+            "configurePreset": "ci-linux-x64"
         },
 
         {
