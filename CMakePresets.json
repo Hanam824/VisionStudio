@@ -28,7 +28,6 @@
                 }
             }
         },
-
         {
             "name": "windows-x64",
             "displayName": "Windows x64 (MSVC)",
@@ -128,7 +127,6 @@
                 "CPACK_GENERATOR": "RPM"
             }
         },
-
         {
             "name": "ci-windows-x64",
             "displayName": "CI: Windows x64 (Ninja)",
@@ -204,7 +202,6 @@
                 "CPACK_GENERATOR": "RPM"
             }
         },
-
         {
             "name": "windows-x64-syntax-check",
             "displayName": "CI: Windows x64 (Syntax Check)",
@@ -273,7 +270,6 @@
             "configurePreset": "linux-rpm-x64",
             "configuration": "Release"
         },
-
         {
             "name": "ci-windows-x64",
             "displayName": "CI: Windows x64",
@@ -294,7 +290,6 @@
             "displayName": "CI: Linux x64",
             "configurePreset": "ci-linux-x64"
         },
-
         {
             "name": "windows-x64-syntax-check",
             "displayName": "CI: Windows x64 Syntax Check",

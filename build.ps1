@@ -14,6 +14,11 @@ $Preset = if ($IsWindows -or $env:OS -eq "Windows_NT") { "windows-x64" }
 
 Write-Host ">>> Vision Studio Build | Preset: $Preset" -ForegroundColor Cyan
 
+# Set up local vcpkg binary cache
+$CachePath = Join-Path $PWD "cache"
+if (-not (Test-Path $CachePath)) { New-Item -ItemType Directory -Path $CachePath | Out-Null }
+$env:VCPKG_BINARY_SOURCES = "clear;files,$CachePath,readwrite"
+
 # 2. Check and initialize vcpkg submodule if empty
 if (-not (Test-Path "./third-party/vcpkg/bootstrap-vcpkg.bat") -and -not (Test-Path "./third-party/vcpkg/bootstrap-vcpkg.sh")) {
     Write-Host ">>> vcpkg submodule is empty! Initializing git submodules..." -ForegroundColor Yellow
