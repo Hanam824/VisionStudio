@@ -18,10 +18,10 @@ jobs:
             os: windows-latest
             preset: windows-x64-syntax-check
             build_preset: windows-x64-syntax-check
-          - name: macOS x64 (Intel)
-            os: macos-26-intel
-            preset: macos-x64-syntax-check
-            build_preset: macos-x64-syntax-check
+          - name: macOS arm64 (Apple Silicon)
+            os: macos-latest
+            preset: macos-arm64-syntax-check
+            build_preset: macos-arm64-syntax-check
           - name: Linux x64
             os: ubuntu-latest
             preset: linux-x64-syntax-check

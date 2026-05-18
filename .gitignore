@@ -64,3 +64,4 @@ Thumbs.db   # Windows image thumbnail cache
 desktop.ini # Windows folder layout settings
 *.tmp
 *.log
+.DS_Store

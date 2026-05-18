@@ -218,10 +218,10 @@
             }
         },
         {
-            "name": "macos-x64-syntax-check",
-            "displayName": "CI: macOS x64 (Syntax Check)",
-            "inherits": "ci-macos-x64",
-            "binaryDir": "${sourceDir}/build/macos-x64-syntax-check",
+            "name": "macos-arm64-syntax-check",
+            "displayName": "CI: macOS Apple Silicon (Syntax Check)",
+            "inherits": "ci-macos-arm64",
+            "binaryDir": "${sourceDir}/build/macos-arm64-syntax-check",
             "environment": {
                 "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets/release-only"
             },
@@ -306,9 +306,9 @@
             "configurePreset": "windows-x64-syntax-check"
         },
         {
-            "name": "macos-x64-syntax-check",
-            "displayName": "CI: macOS Intel Syntax Check",
-            "configurePreset": "macos-x64-syntax-check"
+            "name": "macos-arm64-syntax-check",
+            "displayName": "CI: macOS Apple Silicon Syntax Check",
+            "configurePreset": "macos-arm64-syntax-check"
         },
         {
             "name": "linux-x64-syntax-check",
