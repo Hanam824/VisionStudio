@@ -40,8 +40,8 @@ void ImageViewer::setImage(const QImage& image) {
     fitToView();
 }
 
-void ImageViewer::setImageFromData(const uint8_t* data, int width, int height, int channels) {
-    if (!data || width <= 0 || height <= 0) return;
+void ImageViewer::setImageFromData(const uint8_t* imageData, int width, int height, int channels) {
+    if (!imageData || width <= 0 || height <= 0) return;
 
     QImage::Format fmt;
     if (channels == 1) {
@@ -56,7 +56,7 @@ void ImageViewer::setImageFromData(const uint8_t* data, int width, int height, i
     }
 
     // Create QImage (non-owning). Note: OpenCV step may differ from width*channels.
-    QImage img(data, width, height, width * channels, fmt);
+    QImage img(imageData, width, height, width * channels, fmt);
 
     if (channels == 3) {
         // BGR → RGB swap.

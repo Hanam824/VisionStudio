@@ -14,16 +14,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
+          - name: Windows x64
+            os: windows-latest
             preset: windows-x64-syntax-check
             build_preset: windows-x64-syntax-check
-          - os: macos-13
+          - name: macOS x64 (Intel)
+            os: macos-13
             preset: macos-x64-syntax-check
             build_preset: macos-x64-syntax-check
-          - os: ubuntu-latest
+          - name: Linux x64
+            os: ubuntu-latest
             preset: linux-x64-syntax-check
             build_preset: linux-x64-syntax-check
 
+    name: Check — ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
 
     steps:

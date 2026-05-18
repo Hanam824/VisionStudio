@@ -256,9 +256,9 @@ void MainWindow::updateImageDisplay() {
     if (!m_engine) return;
 
     int w = 0, h = 0, ch = 0;
-    const uint8_t* data = m_engine->getImageData(w, h, ch);
+    const uint8_t* imageData = m_engine->getImageData(w, h, ch);
 
-    if (data && w > 0 && h > 0) {
-        m_imageViewer->setImageFromData(data, w, h, ch);
+    if (imageData && w > 0 && h > 0) {
+        m_imageViewer->setImageFromData(imageData, w, h, ch);
     }
 }

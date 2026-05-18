@@ -12,22 +12,28 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: windows-latest
+          - name: Windows x64
+            os: windows-latest
             preset: ci-windows-x64
             build_preset: ci-windows-x64
-          - os: macos-latest
+          - name: macOS arm64 (Apple Silicon)
+            os: macos-latest
             preset: ci-macos-arm64
             build_preset: ci-macos-arm64
-          - os: macos-13
+          - name: macOS x64 (Intel)
+            os: macos-13
             preset: ci-macos-x64
             build_preset: ci-macos-x64
-          - os: ubuntu-latest
+          - name: Linux x64 (.deb)
+            os: ubuntu-latest
             preset: ci-linux-deb-x64
             build_preset: ci-linux-deb-x64
-          - os: ubuntu-latest
+          - name: Linux x64 (.rpm)
+            os: ubuntu-latest
             preset: ci-linux-rpm-x64
             build_preset: ci-linux-rpm-x64
 
+    name: Build — ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
 
     steps:

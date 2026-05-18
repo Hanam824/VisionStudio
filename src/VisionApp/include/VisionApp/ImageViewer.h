@@ -19,7 +19,7 @@ public:
     void setImage(const QImage& image);
 
     /// Display raw BGR pixel data (from VisionCore).
-    void setImageFromData(const uint8_t* data, int width, int height, int channels);
+    void setImageFromData(const uint8_t* imageData, int width, int height, int channels);
 
     /// Fit the image to the viewport.
     void fitToView();
