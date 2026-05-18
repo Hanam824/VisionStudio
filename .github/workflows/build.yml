@@ -11,17 +11,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
         include:
           - os: windows-latest
-            preset: windows-x64
-            build_preset: windows-x64
+            preset: ci-windows-x64
+            build_preset: ci-windows-x64
           - os: macos-latest
-            preset: macos-arm64
-            build_preset: macos-arm64
+            preset: ci-macos-arm64
+            build_preset: ci-macos-arm64
+          - os: macos-13
+            preset: ci-macos-x64
+            build_preset: ci-macos-x64
           - os: ubuntu-latest
-            preset: linux-deb-x64
-            build_preset: linux-deb-x64
+            preset: ci-linux-deb-x64
+            build_preset: ci-linux-deb-x64
+          - os: ubuntu-latest
+            preset: ci-linux-rpm-x64
+            build_preset: ci-linux-rpm-x64
 
     runs-on: ${{ matrix.os }}
 
@@ -30,6 +35,12 @@ jobs:
       with:
         submodules: recursive
         fetch-depth: 0 # Full history needed for proper release version tagging / changelogs
+
+    - name: Set up MSVC environment (Windows)
+      if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
 
     - name: Install dependencies (Ubuntu)
       if: runner.os == 'Linux'
@@ -60,6 +71,16 @@ jobs:
       if: runner.os == 'Linux'
       run: echo "PKG_CONFIG_PATH=/usr/lib/x86_64-linux-gnu/pkgconfig:/usr/share/pkgconfig:/usr/lib/pkgconfig" >> $GITHUB_ENV
 
+    # Layer 1: Restore the entire vcpkg_installed directory from cache.
+    - name: Cache vcpkg installed packages
+      uses: actions/cache@v4
+      with:
+        path: build/${{ matrix.preset }}/vcpkg_installed
+        key: vcpkg-${{ matrix.preset }}-${{ hashFiles('vcpkg.json') }}
+        restore-keys: |
+          vcpkg-${{ matrix.preset }}-
+
+    # Layer 2: vcpkg binary caching as a fallback when Layer 1 misses.
     - name: Export GitHub Actions Cache Environment
       uses: actions/github-script@v7
       with:
@@ -78,4 +99,4 @@ jobs:
       run: cmake --build --preset ${{ matrix.build_preset }}
 
     - name: Run Tests
-      run: ctest --test-dir build/${{ matrix.preset }} --build-config Release --output-on-failure
+      run: ctest --test-dir build/${{ matrix.preset }} --output-on-failure
