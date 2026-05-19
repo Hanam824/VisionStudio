@@ -11,6 +11,10 @@ cd "$(dirname "$0")"
 echo "=== Vision Studio Build ==="
 echo
 
+# Set up local vcpkg binary cache
+mkdir -p "$PWD/cache"
+export VCPKG_BINARY_SOURCES="clear;files,$PWD/cache,readwrite"
+
 # 1. Detect platform
 if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ "$(uname -m)" == "arm64" ]]; then

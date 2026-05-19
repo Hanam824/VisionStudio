@@ -24,23 +24,29 @@ jobs:
             os: macos-26-intel
             preset: ci-macos-x64
             build_preset: ci-macos-x64
-          - name: Linux x64 (.deb)
+          - name: Linux x64
             os: ubuntu-latest
-            preset: ci-linux-deb-x64
-            build_preset: ci-linux-deb-x64
-          - name: Linux x64 (.rpm)
-            os: ubuntu-latest
-            preset: ci-linux-rpm-x64
-            build_preset: ci-linux-rpm-x64
+            preset: ci-linux-x64
+            build_preset: ci-linux-x64
 
     name: Build — ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
+    env:
+      VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+      VCPKG_FORCE_SYSTEM_BINARIES: "0"
 
     steps:
     - uses: actions/checkout@v6
       with:
         submodules: recursive
         fetch-depth: 0 # Full history needed for proper release version tagging / changelogs
+
+    - name: Export GitHub Actions cache environment variables
+      uses: actions/github-script@v7
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
     - name: Set up MSVC environment (Windows)
       if: runner.os == 'Windows'
@@ -94,3 +100,25 @@ jobs:
 
     - name: Run Tests
       run: ctest --test-dir build/${{ matrix.preset }} --output-on-failure
+
+    - name: Package Release (Linux)
+      if: runner.os == 'Linux'
+      working-directory: build/${{ matrix.preset }}
+      run: cpack -G "DEB;RPM;TGZ"
+
+    - name: Package Release (Windows/macOS)
+      if: runner.os != 'Linux'
+      working-directory: build/${{ matrix.preset }}
+      run: cpack
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: VisionStudio-${{ matrix.preset }}
+        path: |
+          build/${{ matrix.preset }}/bin/
+          build/${{ matrix.preset }}/*.deb
+          build/${{ matrix.preset }}/*.rpm
+          build/${{ matrix.preset }}/*.dmg
+          build/${{ matrix.preset }}/*.zip
+          build/${{ matrix.preset }}/*.tar.gz

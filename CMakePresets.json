@@ -28,7 +28,6 @@
                 }
             }
         },
-
         {
             "name": "windows-x64",
             "displayName": "Windows x64 (MSVC)",
@@ -128,7 +127,6 @@
                 "CPACK_GENERATOR": "RPM"
             }
         },
-
         {
             "name": "ci-windows-x64",
             "displayName": "CI: Windows x64 (Ninja)",
@@ -175,7 +173,7 @@
         },
         {
             "name": "ci-linux-x64",
-            "hidden": true,
+            "displayName": "CI: Linux x64 (Ninja)",
             "inherits": "ci-ninja",
             "cacheVariables": {
                 "VCPKG_TARGET_TRIPLET": "x64-linux"
@@ -204,7 +202,6 @@
                 "CPACK_GENERATOR": "RPM"
             }
         },
-
         {
             "name": "windows-x64-syntax-check",
             "displayName": "CI: Windows x64 (Syntax Check)",
@@ -218,10 +215,10 @@
             }
         },
         {
-            "name": "macos-x64-syntax-check",
-            "displayName": "CI: macOS x64 (Syntax Check)",
-            "inherits": "ci-macos-x64",
-            "binaryDir": "${sourceDir}/build/macos-x64-syntax-check",
+            "name": "macos-arm64-syntax-check",
+            "displayName": "CI: macOS Apple Silicon (Syntax Check)",
+            "inherits": "ci-macos-arm64",
+            "binaryDir": "${sourceDir}/build/macos-arm64-syntax-check",
             "environment": {
                 "VCPKG_OVERLAY_TRIPLETS": "${sourceDir}/cmake/triplets/release-only"
             },
@@ -273,7 +270,6 @@
             "configurePreset": "linux-rpm-x64",
             "configuration": "Release"
         },
-
         {
             "name": "ci-windows-x64",
             "displayName": "CI: Windows x64",
@@ -290,25 +286,19 @@
             "configurePreset": "ci-macos-x64"
         },
         {
-            "name": "ci-linux-deb-x64",
-            "displayName": "CI: Linux DEB",
-            "configurePreset": "ci-linux-deb-x64"
+            "name": "ci-linux-x64",
+            "displayName": "CI: Linux x64",
+            "configurePreset": "ci-linux-x64"
         },
-        {
-            "name": "ci-linux-rpm-x64",
-            "displayName": "CI: Linux RPM",
-            "configurePreset": "ci-linux-rpm-x64"
-        },
-
         {
             "name": "windows-x64-syntax-check",
             "displayName": "CI: Windows x64 Syntax Check",
             "configurePreset": "windows-x64-syntax-check"
         },
         {
-            "name": "macos-x64-syntax-check",
-            "displayName": "CI: macOS Intel Syntax Check",
-            "configurePreset": "macos-x64-syntax-check"
+            "name": "macos-arm64-syntax-check",
+            "displayName": "CI: macOS Apple Silicon Syntax Check",
+            "configurePreset": "macos-arm64-syntax-check"
         },
         {
             "name": "linux-x64-syntax-check",
