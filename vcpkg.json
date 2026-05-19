@@ -4,6 +4,11 @@
     "version-semver": "0.1.0",
     "description": "Cross-platform OCR & Image Processing Studio",
     "dependencies": [
+        {
+            "name": "libjpeg-turbo",
+            "default-features": false,
+            "features": ["jpeg8"]
+        },
         "opencv4",
         "qt5-base",
         "ncnn",
