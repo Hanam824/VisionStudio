@@ -54,13 +54,13 @@ void MainWindow::createActions() {
     connect(m_actOpen, &QAction::triggered, this, &MainWindow::onOpenImage);
 
     m_actPreprocess = new QAction(tr("&Preprocess"), this);
-    m_actPreprocess->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
+    m_actPreprocess->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_P));
     m_actPreprocess->setStatusTip(tr("Run preprocessing pipeline on current image"));
     m_actPreprocess->setEnabled(false);
     connect(m_actPreprocess, &QAction::triggered, this, &MainWindow::onPreprocess);
 
     m_actRunOcr = new QAction(tr("Run &OCR"), this);
-    m_actRunOcr->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
+    m_actRunOcr->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_R));
     m_actRunOcr->setStatusTip(tr("Run OCR on preprocessed image"));
     m_actRunOcr->setEnabled(false);
     connect(m_actRunOcr, &QAction::triggered, this, &MainWindow::onRunOcr);

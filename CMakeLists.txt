@@ -53,7 +53,7 @@ endif()
 
 # ── Dependencies (via vcpkg) ────────────────────────────────────────────────
 find_package(OpenCV  4 REQUIRED COMPONENTS core imgproc imgcodecs)
-find_package(Qt5     REQUIRED COMPONENTS Widgets Core Gui)
+find_package(Qt6     REQUIRED COMPONENTS Widgets Core Gui)
 
 # Optional: ncnn or ONNX Runtime for inference
 find_package(ncnn QUIET)

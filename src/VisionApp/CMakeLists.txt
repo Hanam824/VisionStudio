@@ -33,9 +33,9 @@ target_include_directories(VisionApp
 target_link_libraries(VisionApp
     PRIVATE
         VisionCore      # Interface headers + link-time symbols
-        Qt5::Widgets
-        Qt5::Core
-        Qt5::Gui
+        Qt6::Widgets
+        Qt6::Core
+        Qt6::Gui
 )
 
 # On Windows, copy VisionCore DLL next to VisionApp after build.
