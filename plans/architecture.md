@@ -10,7 +10,7 @@
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        VisionApp (Executable)                       │
-│  Qt 5 Widgets · Dark Theme · Toolbar · Image Viewer · Log Console  │
+│  Qt 6 Widgets · Dark Theme · Toolbar · Image Viewer · Log Console   │
 │                                                                     │
 │  Loads VisionCore at runtime via QLibrary / dlopen                  │
 │  Communicates ONLY through IVisionEngine abstract interface         │
@@ -18,8 +18,8 @@
                 │  createVisionEngine()  (C-linkage factory)
                 ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                    VisionCore (Shared Library / DLL)                 │
-│  IVisionEngine (pure virtual) ← VisionEngine (concrete impl)       │
+│                    VisionCore (Shared Library / DLL)                │
+│  IVisionEngine (pure virtual) ← VisionEngine (concrete impl)        │
 │  ImageProcessor (OpenCV pipeline)                                   │
 │  Inference Engine (ncnn / ONNX Runtime)                             │
 └─────────────────────────────────────────────────────────────────────┘
@@ -27,7 +27,7 @@
 
 ## Why This Separation Matters
 
-1. **LGPLv3 Compliance**: Qt 5 is licensed under LGPLv3. By keeping AI/image logic in a separate DLL (`VisionCore`) and communicating only through abstract interfaces, VisionApp can link dynamically without imposing LGPL on proprietary code.
+1. **LGPLv3 Compliance**: Qt 6 is licensed under LGPLv3. By keeping AI/image logic in a separate DLL (`VisionCore`) and communicating only through abstract interfaces, VisionApp can link dynamically without imposing LGPL on proprietary code.
 
 2. **Plugin Architecture**: Third parties can provide alternative `IVisionEngine` implementations without modifying VisionApp.
 

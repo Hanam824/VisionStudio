@@ -33,9 +33,9 @@ target_include_directories(VisionApp
 target_link_libraries(VisionApp
     PRIVATE
         VisionCore      # Interface headers + link-time symbols
-        Qt5::Widgets
-        Qt5::Core
-        Qt5::Gui
+        Qt6::Widgets
+        Qt6::Core
+        Qt6::Gui
 )
 
 # On Windows, copy VisionCore DLL next to VisionApp after build.
@@ -46,6 +46,38 @@ if(WIN32)
             $<TARGET_FILE_DIR:VisionApp>
         COMMENT "Copying VisionCore.dll to output directory"
     )
+endif()
+
+# ── Qt Plugin Deployment ────────────────────────────────────────────────────
+# Qt6 requires platform plugins (e.g. qwindows.dll) in a platforms/
+# subdirectory next to the executable. Without them, the app fatally crashes
+# at startup with "no Qt platform plugin could be initialized".
+if(WIN32)
+    # Use Qt6's built-in deploy support (CMake 3.21+, Qt 6.3+)
+    if(QT_VERSION VERSION_GREATER_EQUAL "6.3")
+        qt_generate_deploy_app_script(
+            TARGET VisionApp
+            OUTPUT_SCRIPT deploy_script
+            NO_UNSUPPORTED_PLATFORM_ERROR
+            NO_TRANSLATIONS
+        )
+        install(SCRIPT ${deploy_script})
+    endif()
+
+    # Always add a post-build copy for local development/debugging.
+    # This ensures plugins are present even without running the install step.
+    set(_qt_plugin_base "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}")
+
+    foreach(_plugin_dir platforms styles imageformats)
+        add_custom_command(TARGET VisionApp POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory
+                "$<TARGET_FILE_DIR:VisionApp>/${_plugin_dir}"
+            COMMAND ${CMAKE_COMMAND} -E copy_directory
+                "$<IF:$<CONFIG:Debug>,${_qt_plugin_base}/debug/Qt6/plugins/${_plugin_dir},${_qt_plugin_base}/Qt6/plugins/${_plugin_dir}>"
+                "$<TARGET_FILE_DIR:VisionApp>/${_plugin_dir}"
+            COMMENT "Deploying Qt ${_plugin_dir} plugins"
+        )
+    endforeach()
 endif()
 
 # ── IDE grouping ─────────────────────────────────────────────────────────────

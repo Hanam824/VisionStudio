@@ -10,7 +10,7 @@
             "features": ["jpeg8"]
         },
         "opencv4",
-        "qt5-base",
+        "qtbase",
         "ncnn",
         "gtest"
     ],

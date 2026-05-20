@@ -95,7 +95,7 @@ void ImageViewer::wheelEvent(QWheelEvent* event) {
 void ImageViewer::mousePressEvent(QMouseEvent* event) {
     if (event->button() == Qt::MiddleButton) {
         m_panning = true;
-        m_panStart = event->pos();
+        m_panStart = event->position().toPoint();
         setCursor(Qt::ClosedHandCursor);
         event->accept();
     } else {
@@ -115,8 +115,8 @@ void ImageViewer::mouseReleaseEvent(QMouseEvent* event) {
 
 void ImageViewer::mouseMoveEvent(QMouseEvent* event) {
     if (m_panning) {
-        QPoint delta = event->pos() - m_panStart;
-        m_panStart = event->pos();
+        QPoint delta = event->position().toPoint() - m_panStart;
+        m_panStart = event->position().toPoint();
         horizontalScrollBar()->setValue(horizontalScrollBar()->value() - delta.x());
         verticalScrollBar()->setValue(verticalScrollBar()->value() - delta.y());
         event->accept();
