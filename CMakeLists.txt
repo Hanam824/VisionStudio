@@ -88,8 +88,14 @@ set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}/LICENSE.txt")
 
 
 if(WIN32)
-    set(CPACK_GENERATOR "WIX;ZIP")
-    set(CPACK_WIX_UPGRADE_GUID "A1B2C3D4-E5F6-4A7B-8C9D-0E1F2A3B4C5D")
+    set(CPACK_GENERATOR "NSIS;ZIP")
+    # NSIS premium installer configuration
+    set(CPACK_NSIS_DISPLAY_NAME "VisionStudio")
+    set(CPACK_NSIS_PACKAGE_NAME "VisionStudio")
+    set(CPACK_NSIS_HELP_LINK "https://github.com/Hanam824/VisionStudio")
+    set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/Hanam824/VisionStudio")
+    set(CPACK_NSIS_CONTACT "visionstudio@users.noreply.github.com")
+    set(CPACK_NSIS_MODIFY_PATH ON)
 elseif(APPLE)
     set(CPACK_GENERATOR "DragNDrop")
 elseif(UNIX)
