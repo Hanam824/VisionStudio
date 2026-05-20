@@ -243,10 +243,18 @@ void MainWindow::onAbout() {
     QString ver = m_engine ? QString::fromStdString(m_engine->versionString())
                            : "Engine not loaded";
     QMessageBox::about(this, tr("About Vision Studio"),
-        tr("<h2>Vision Studio</h2>"
-           "<p>Cross-platform OCR &amp; Image Processing</p>"
-           "<p>Engine: %1</p>"
-           "<p>Built with Qt %2, OpenCV 4</p>")
+        tr("<h3>Vision Studio</h3>"
+           "<p>Cross-platform OCR &amp; Image Processing Studio.</p>"
+           "<p><b>Engine:</b> %1</p>"
+           "<p><b>Built using:</b> Qt %2, OpenCV 4</p>"
+           "<hr/>"
+           "<p>This application is distributed under terms of the proprietary/commercial license.</p>"
+           "<p>The Qt Toolkit is Copyright (C) The Qt Company Ltd. "
+           "Qt is licensed under the terms of the GNU Lesser General Public License version 3 (LGPLv3).<br/>"
+           "A copy of the LGPLv3 license is available in the application directory or online at "
+           "<a href=\"https://www.gnu.org/licenses/lgpl-3.0.html\">gnu.org/licenses/lgpl-3.0.html</a>.</p>"
+           "<p>The Qt library is dynamically linked and unmodified. You can obtain the corresponding Qt source code "
+           "from <a href=\"https://code.qt.io\">code.qt.io</a>.</p>")
             .arg(ver, QT_VERSION_STR));
 }
 
