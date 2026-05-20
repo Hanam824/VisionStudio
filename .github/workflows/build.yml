@@ -67,7 +67,7 @@ jobs:
           libx11-dev libxft-dev libxext-dev libwayland-dev libxrender-dev python3-setuptools python3-pip gperf bison flex libasound2-dev \
           libharfbuzz-dev libpango1.0-dev libatk1.0-dev libgdk-pixbuf2.0-dev libglib2.0-dev libgtk-3-dev libipc-run-perl \
           libltdl-dev libxi-dev libxcursor-dev libxfixes-dev libfontconfig1-dev libfreetype6-dev libdbus-1-dev \
-          libxrandr-dev libxinerama-dev libxcomposite-dev libxtst-dev libsm-dev libice-dev libxkbcommon-dev
+          libxrandr-dev libxinerama-dev libxcomposite-dev libxtst-dev libsm-dev libice-dev libxkbcommon-dev rpm
 
     - name: Install dependencies (macOS)
       if: runner.os == 'macOS'
@@ -133,5 +133,34 @@ jobs:
           build/${{ matrix.preset }}/*.deb
           build/${{ matrix.preset }}/*.rpm
           build/${{ matrix.preset }}/*.dmg
+          build/${{ matrix.preset }}/*.msi
           build/${{ matrix.preset }}/*.zip
           build/${{ matrix.preset }}/*.tar.gz
+
+  publish-release:
+    needs: production-build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: List downloaded files for debugging
+      run: ls -R artifacts
+
+    - name: Publish GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          artifacts/**/*.deb
+          artifacts/**/*.rpm
+          artifacts/**/*.dmg
+          artifacts/**/*.msi
+          artifacts/**/*.zip
+          artifacts/**/*.tar.gz
+        draft: false
+        prerelease: false
