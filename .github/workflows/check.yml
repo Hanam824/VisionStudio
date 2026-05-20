@@ -32,6 +32,7 @@ jobs:
     env:
       VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
       VCPKG_FORCE_SYSTEM_BINARIES: "0"
+      VCPKG_KEEP_ENV_VARS: "PKG_CONFIG_PATH"
 
     steps:
     - uses: actions/checkout@v6
@@ -57,12 +58,14 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y build-essential ninja-build cmake pkg-config autoconf autoconf-archive automake libtool \
-          libgl1-mesa-dev libglu1-mesa-dev libegl1-mesa-dev libxkbcommon-x11-dev libxcb-xinerama0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
-          libxcb-util-dev libxcb-util0-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev \
-          libxcb-render-util0-dev libxcb-sync-dev libxcb-cursor-dev libxcb-xkb-dev libx11-dev libxft-dev libxext-dev libwayland-dev libxrender-dev \
-          libx11-xcb-dev libxkbcommon-dev python3-setuptools python3-pip gperf bison flex libasound2-dev \
+          libgl1-mesa-dev libglu1-mesa-dev libegl1-mesa-dev libxkbcommon-x11-dev libx11-xcb-dev \
+          libxcb1-dev libxcb-xinput-dev libxcb-xkb-dev libxcb-cursor-dev libxcb-util-dev libxcb-keysyms1-dev \
+          libxcb-image0-dev libxcb-icccm4-dev libxcb-render-util0-dev libxcb-xinerama0-dev libxcb-shape0-dev \
+          libxcb-xfixes0-dev libxcb-randr0-dev libxcb-sync-dev libxcb-shm0-dev libxcb-render0-dev libxcb-glx0-dev \
+          libx11-dev libxft-dev libxext-dev libwayland-dev libxrender-dev python3-setuptools python3-pip gperf bison flex libasound2-dev \
           libharfbuzz-dev libpango1.0-dev libatk1.0-dev libgdk-pixbuf2.0-dev libglib2.0-dev libgtk-3-dev libipc-run-perl \
-          libltdl-dev libxi-dev libxcursor-dev libxfixes-dev libfontconfig1-dev libdbus-1-dev
+          libltdl-dev libxi-dev libxcursor-dev libxfixes-dev libfontconfig1-dev libfreetype6-dev libdbus-1-dev \
+          libxrandr-dev libxinerama-dev libxcomposite-dev libxtst-dev libsm-dev libice-dev libxkbcommon-dev
 
     - name: Install dependencies (macOS)
       if: runner.os == 'macOS'
@@ -95,3 +98,13 @@ jobs:
 
     - name: Build (Verify Code Integrity)
       run: cmake --build --preset ${{ matrix.build_preset }}
+
+    - name: Upload vcpkg build logs on failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: vcpkg-logs-${{ matrix.preset }}
+        path: |
+          third-party/vcpkg/buildtrees/**/*.log
+          third-party/vcpkg/buildtrees/**/*.yaml
+          third-party/vcpkg/buildtrees/**/*.txt
