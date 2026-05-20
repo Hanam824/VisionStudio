@@ -1,12 +1,15 @@
 name: Frequent Build Check
 
 on:
-  push:
-    branches: [ "main" ]
-    tags-ignore:
-      - 'v*' # Avoid running this when a release tag is pushed
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - 'docs/**'
+      - 'plans/**'
+      - '*.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.gitmodules'
 
 jobs:
   check-build:
