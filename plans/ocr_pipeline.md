@@ -50,8 +50,8 @@ Backend availability is detected at CMake configure time. VisionEngine selects t
 │  Toolbar: [Open] | [Preprocess] [Run OCR]                      │
 ├────────────────────────────────────────────────────────────────┤
 │                                                                │
-│                    Image Viewer (central)                       │
-│                 Zoom / Pan / Fit to Window                      │
+│                    Image Viewer (central)                      │
+│                 Zoom / Pan / Fit to Window                     │
 │                                                                │
 ├────────────────────────────────────────────────────────────────┤
 │  Log Console (dockable)                                        │
