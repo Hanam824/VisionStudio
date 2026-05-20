@@ -21,6 +21,27 @@ add_executable(VisionApp WIN32
     ${VISIONAPP_RESOURCES}
 )
 
+# On Windows, generate version resource metadata
+if(WIN32)
+    string(REPLACE "." "," RC_VERSION_COMMA "${PROJECT_VERSION}")
+    set(RC_VERSION_COMMA "${RC_VERSION_COMMA},0")
+
+    set(RC_FILE_TYPE "0x1L") # VFT_APP
+    set(RC_COMPANY_NAME "VisionStudio Team")
+    set(RC_FILE_DESCRIPTION "Cross-platform OCR & Image Processing Studio")
+    set(RC_INTERNAL_NAME "VisionStudio")
+    set(RC_COPYRIGHT "Copyright (c) 2026 VisionStudio Team. All rights reserved.")
+    set(RC_ORIGINAL_FILENAME "VisionStudio.exe")
+    set(RC_PRODUCT_NAME "VisionStudio")
+
+    configure_file(
+        "${CMAKE_SOURCE_DIR}/cmake/version.rc.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/VisionApp.rc"
+        @ONLY
+    )
+    target_sources(VisionApp PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/VisionApp.rc")
+endif()
+
 # Include directories.
 target_include_directories(VisionApp
     PRIVATE
@@ -54,7 +75,7 @@ endif()
 # at startup with "no Qt platform plugin could be initialized".
 if(WIN32)
     # Use Qt6's built-in deploy support (CMake 3.21+, Qt 6.3+)
-    if(QT_VERSION VERSION_GREATER_EQUAL "6.3")
+    if(QT_VERSION VERSION_GREATER_EQUAL "6.3" OR Qt6_VERSION VERSION_GREATER_EQUAL "6.3")
         qt_generate_deploy_app_script(
             TARGET VisionApp
             OUTPUT_SCRIPT deploy_script
@@ -89,6 +110,12 @@ set_target_properties(VisionApp PROPERTIES
     OUTPUT_NAME "VisionStudio"
     WIN32_EXECUTABLE ON
     MACOSX_BUNDLE ON
+    MACOSX_BUNDLE_INFO_STRING "Cross-platform OCR & Image Processing Studio"
+    MACOSX_BUNDLE_BUNDLE_NAME "VisionStudio"
+    MACOSX_BUNDLE_GUI_IDENTIFIER "com.visionstudio.app"
+    MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+    MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+    MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2026 VisionStudio Team. All rights reserved."
 )
 
 # ── Install Rules ───────────────────────────────────────────────────────────
@@ -96,3 +123,8 @@ install(TARGETS VisionApp
     RUNTIME DESTINATION bin
     BUNDLE DESTINATION .
 )
+
+# On Windows, install all dependent runtime DLLs (OpenCV, Qt, etc.) next to the executable
+if(WIN32)
+    install(FILES $<TARGET_RUNTIME_DLLS:VisionApp> DESTINATION bin)
+endif()

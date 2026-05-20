@@ -133,7 +133,7 @@ jobs:
           build/${{ matrix.preset }}/*.deb
           build/${{ matrix.preset }}/*.rpm
           build/${{ matrix.preset }}/*.dmg
-          build/${{ matrix.preset }}/*.msi
+          build/${{ matrix.preset }}/*.exe
           build/${{ matrix.preset }}/*.zip
           build/${{ matrix.preset }}/*.tar.gz
 
@@ -159,7 +159,7 @@ jobs:
           artifacts/**/*.deb
           artifacts/**/*.rpm
           artifacts/**/*.dmg
-          artifacts/**/*.msi
+          artifacts/**/*.exe
           artifacts/**/*.zip
           artifacts/**/*.tar.gz
         draft: false
