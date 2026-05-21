@@ -55,6 +55,10 @@ jobs:
       with:
         arch: x64
 
+    - name: Install NSIS (Windows)
+      if: runner.os == 'Windows'
+      uses: negrutiu/nsis-install@v2
+
     - name: Install dependencies (Ubuntu)
       if: runner.os == 'Linux'
       run: |
