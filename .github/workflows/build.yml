@@ -22,36 +22,47 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  determine-matrix:
+    name: Determine Build Matrix
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@ab7a9404c0f3da075243ca237b5fac12c98deaa5 # v2.19.3
+        with:
+          egress-policy: audit
+
+      - name: Determine matrix
+        id: set-matrix
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            case "${{ github.event.inputs.platform }}" in
+              "Windows")
+                echo 'matrix={"include":[{"name":"Windows x64","os":"windows-latest","preset":"ci-windows-x64","build_preset":"ci-windows-x64"}]}' >> $GITHUB_OUTPUT
+                ;;
+              "macOS")
+                echo 'matrix={"include":[{"name":"macOS arm64 (Apple Silicon)","os":"macos-latest","preset":"ci-macos-arm64","build_preset":"ci-macos-arm64"},{"name":"macOS x64 (Intel)","os":"macos-26-intel","preset":"ci-macos-x64","build_preset":"ci-macos-x64"}]}' >> $GITHUB_OUTPUT
+                ;;
+              "Linux")
+                echo 'matrix={"include":[{"name":"Linux x64","os":"ubuntu-latest","preset":"ci-linux-x64","build_preset":"ci-linux-x64"}]}' >> $GITHUB_OUTPUT
+                ;;
+              *)
+                echo 'matrix={"include":[{"name":"Windows x64","os":"windows-latest","preset":"ci-windows-x64","build_preset":"ci-windows-x64"},{"name":"macOS arm64 (Apple Silicon)","os":"macos-latest","preset":"ci-macos-arm64","build_preset":"ci-macos-arm64"},{"name":"macOS x64 (Intel)","os":"macos-26-intel","preset":"ci-macos-x64","build_preset":"ci-macos-x64"},{"name":"Linux x64","os":"ubuntu-latest","preset":"ci-linux-x64","build_preset":"ci-linux-x64"}]}' >> $GITHUB_OUTPUT
+                ;;
+            esac
+          else
+            echo 'matrix={"include":[{"name":"Windows x64","os":"windows-latest","preset":"ci-windows-x64","build_preset":"ci-windows-x64"},{"name":"macOS arm64 (Apple Silicon)","os":"macos-latest","preset":"ci-macos-arm64","build_preset":"ci-macos-arm64"},{"name":"macOS x64 (Intel)","os":"macos-26-intel","preset":"ci-macos-x64","build_preset":"ci-macos-x64"},{"name":"Linux x64","os":"ubuntu-latest","preset":"ci-linux-x64","build_preset":"ci-linux-x64"}]}' >> $GITHUB_OUTPUT
+          fi
+
   production-build:
+    needs: determine-matrix
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - name: Windows x64
-            os: windows-latest
-            preset: ci-windows-x64
-            build_preset: ci-windows-x64
-          - name: macOS arm64 (Apple Silicon)
-            os: macos-latest
-            preset: ci-macos-arm64
-            build_preset: ci-macos-arm64
-          - name: macOS x64 (Intel)
-            os: macos-26-intel
-            preset: ci-macos-x64
-            build_preset: ci-macos-x64
-          - name: Linux x64
-            os: ubuntu-latest
-            preset: ci-linux-x64
-            build_preset: ci-linux-x64
+      matrix: ${{ fromJson(needs.determine-matrix.outputs.matrix) }}
 
     name: Build — ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
-    if: |
-      github.event_name != 'workflow_dispatch' ||
-      github.event.inputs.platform == 'all' ||
-      (github.event.inputs.platform == 'Windows' && matrix.os == 'windows-latest') ||
-      (github.event.inputs.platform == 'macOS' && startsWith(matrix.os, 'macos')) ||
-      (github.event.inputs.platform == 'Linux' && matrix.os == 'ubuntu-latest')
     env:
       VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
       VCPKG_FORCE_SYSTEM_BINARIES: "0"
