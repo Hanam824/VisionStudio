@@ -2,6 +2,9 @@
 #include "VisionApp/ImageViewer.h"
 #include "VisionApp/LogConsole.h"
 
+#include <QtConcurrent/QtConcurrent>
+#include <QFutureWatcher>
+
 #include <QAction>
 #include <QApplication>
 #include <QDockWidget>
@@ -207,36 +210,65 @@ void MainWindow::onOpenImage() {
 void MainWindow::onPreprocess() {
     if (!m_engine) return;
 
+    m_actPreprocess->setEnabled(false);
+    m_actRunOcr->setEnabled(false);
+    statusBar()->showMessage(tr("Preprocessing..."));
+
+    auto watcher = new QFutureWatcher<bool>(this);
+    connect(watcher, &QFutureWatcher<bool>::finished, this, [this, watcher]() {
+        if (watcher->result()) {
+            updateImageDisplay();
+            statusBar()->showMessage(tr("Preprocessing complete."));
+        } else {
+            statusBar()->showMessage(tr("Preprocessing failed."));
+        }
+        m_actPreprocess->setEnabled(true);
+        m_actRunOcr->setEnabled(true);
+        watcher->deleteLater();
+    });
+
     vision::PreprocessOptions opts;
     opts.grayscale          = true;
     opts.threshold          = true;
     opts.perspectiveCorrect = false;
 
-    if (m_engine->preprocess(opts)) {
-        updateImageDisplay();
-        statusBar()->showMessage(tr("Preprocessing complete."));
-    } else {
-        statusBar()->showMessage(tr("Preprocessing failed."));
-    }
+    QFuture<bool> future = QtConcurrent::run([this, opts]() {
+        return m_engine->preprocess(opts);
+    });
+    watcher->setFuture(future);
 }
 
 void MainWindow::onRunOcr() {
     if (!m_engine) return;
 
-    auto results = m_engine->runOcr();
+    m_actPreprocess->setEnabled(false);
+    m_actRunOcr->setEnabled(false);
+    statusBar()->showMessage(tr("Running OCR..."));
 
-    if (results.empty()) {
-        m_logConsole->appendMessage(2, "OCR returned no results.");
-        statusBar()->showMessage(tr("OCR: no text detected."));
-    } else {
-        for (const auto& r : results) {
-            QString msg = QString("OCR [%.2f]: \"%1\"")
-                .arg(QString::fromStdString(r.text));
-            m_logConsole->appendMessage(1, msg);
+    auto watcher = new QFutureWatcher<std::vector<vision::OcrResult>>(this);
+    connect(watcher, &QFutureWatcher<std::vector<vision::OcrResult>>::finished, this, [this, watcher]() {
+        auto results = watcher->result();
+        if (results.empty()) {
+            m_logConsole->appendMessage(2, "OCR returned no results.");
+            statusBar()->showMessage(tr("OCR: no text detected."));
+        } else {
+            for (const auto& r : results) {
+                QString msg = QString("OCR [%.2f]: \"%1\"")
+                    .arg(QString::fromStdString(r.text));
+                m_logConsole->appendMessage(1, msg);
+            }
+            statusBar()->showMessage(
+                tr("OCR: %1 region(s) detected.").arg(results.size()));
         }
-        statusBar()->showMessage(
-            tr("OCR: %1 region(s) detected.").arg(results.size()));
-    }
+        m_actPreprocess->setEnabled(true);
+        m_actRunOcr->setEnabled(true);
+        watcher->deleteLater();
+    });
+
+    QFuture<std::vector<vision::OcrResult>> future = QtConcurrent::run([this]() {
+        return m_engine->runOcr();
+    });
+    watcher->setFuture(future);
 }
 
 void MainWindow::onAbout() {
@@ -263,10 +295,9 @@ void MainWindow::onAbout() {
 void MainWindow::updateImageDisplay() {
     if (!m_engine) return;
 
-    int w = 0, h = 0, ch = 0;
-    const uint8_t* imageData = m_engine->getImageData(w, h, ch);
+    vision::ImageData imgData = m_engine->getImageData();
 
-    if (imageData && w > 0 && h > 0) {
-        m_imageViewer->setImageFromData(imageData, w, h, ch);
+    if (!imgData.buffer.empty() && imgData.width > 0 && imgData.height > 0) {
+        m_imageViewer->setImageFromData(imgData.buffer.data(), imgData.width, imgData.height, imgData.channels, imgData.step);
     }
 }

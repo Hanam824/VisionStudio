@@ -64,7 +64,7 @@ ImageProcessor& ImageProcessor::correctPerspective() {
     if (m_image.channels() > 1) {
         cv::cvtColor(m_image, gray, cv::COLOR_BGR2GRAY);
     } else {
-        gray = m_image.clone();
+        gray = m_image;
     }
 
     // Detect edges.
@@ -75,40 +75,39 @@ ImageProcessor& ImageProcessor::correctPerspective() {
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(edges, contours, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
 
-    // Sort by area descending and look for a quadrilateral.
-    std::sort(contours.begin(), contours.end(),
-        [](const auto& a, const auto& b) {
-            return cv::contourArea(a) > cv::contourArea(b);
-        }
-    );
+    // Pre-calculate areas to avoid O(N log N) re-calculations during sort.
+    std::vector<std::pair<double, size_t>> areas;
+    areas.reserve(contours.size());
+    for (size_t i = 0; i < contours.size(); ++i) {
+        areas.emplace_back(cv::contourArea(contours[i]), i);
+    }
 
-    for (const auto& contour : contours) {
+    // Sort by area descending.
+    std::sort(areas.begin(), areas.end(),
+        [](const auto& a, const auto& b) { return a.first > b.first; });
+
+    for (const auto& p : areas) {
+        const auto& contour = contours[p.second];
         double peri = cv::arcLength(contour, true);
         std::vector<cv::Point> approx;
         cv::approxPolyDP(contour, approx, 0.02 * peri, true);
 
-        if (approx.size() == 4 &&
-            cv::contourArea(approx) > m_image.total() * 0.1) {
-            // Order points: top-left, top-right, bottom-right, bottom-left.
+        if (approx.size() == 4 && p.first > m_image.total() * 0.1) {
+            // Robust quad sorting:
+            // Top-Left: min(x+y), Bottom-Right: max(x+y)
+            // Top-Right: min(y-x), Bottom-Left: max(y-x)
             cv::Point2f src[4];
-            // Sort by y first, then by x within each pair.
-            std::sort(approx.begin(), approx.end(),
-                [](const cv::Point& a, const cv::Point& b) {
-                    return a.y < b.y;
-                }
-            );
-            // Top two points.
-            if (approx[0].x < approx[1].x) {
-                src[0] = approx[0]; src[1] = approx[1];
-            } else {
-                src[0] = approx[1]; src[1] = approx[0];
-            }
-            // Bottom two points.
-            if (approx[2].x < approx[3].x) {
-                src[3] = approx[2]; src[2] = approx[3];
-            } else {
-                src[3] = approx[3]; src[2] = approx[2];
-            }
+            
+            auto sum_comp = [](const cv::Point& a, const cv::Point& b) { return (a.x + a.y) < (b.x + b.y); };
+            auto diff_comp = [](const cv::Point& a, const cv::Point& b) { return (a.y - a.x) < (b.y - b.x); };
+            
+            auto minmax_sum = std::minmax_element(approx.begin(), approx.end(), sum_comp);
+            auto minmax_diff = std::minmax_element(approx.begin(), approx.end(), diff_comp);
+
+            src[0] = *minmax_sum.first;   // Top-Left
+            src[2] = *minmax_sum.second;  // Bottom-Right
+            src[1] = *minmax_diff.first;  // Top-Right
+            src[3] = *minmax_diff.second; // Bottom-Left
 
             // Compute destination rectangle.
             float w1 = static_cast<float>(

@@ -61,20 +61,24 @@ bool VisionEngine::loadImage(const std::string& filePath) {
     return true;
 }
 
-const uint8_t* VisionEngine::getImageData(
-    int& width, int& height, int& channels) const {
+ImageData VisionEngine::getImageData() const {
     std::lock_guard lock(m_mutex);
 
+    ImageData data;
     if (!m_processor.hasImage()) {
-        width = height = channels = 0;
-        return nullptr;
+        return data;
     }
 
     const auto& img = m_processor.image();
-    width    = img.cols;
-    height   = img.rows;
-    channels = img.channels();
-    return img.data;
+    data.width    = img.cols;
+    data.height   = img.rows;
+    data.channels = img.channels();
+    data.step     = static_cast<int>(img.step[0]);
+    
+    size_t dataSize = data.step * data.height;
+    data.buffer.assign(img.data, img.data + dataSize);
+    
+    return data;
 }
 
 // ── Preprocessing ───────────────────────────────────────────────────────────

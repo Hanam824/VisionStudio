@@ -26,8 +26,7 @@ public:
     [[nodiscard]] bool isReady() const override;
 
     bool loadImage(const std::string& filePath) override;
-    [[nodiscard]] const uint8_t* getImageData(
-        int& width, int& height, int& channels) const override;
+    [[nodiscard]] ImageData getImageData() const override;
 
     bool preprocess(const PreprocessOptions& opts) override;
     std::vector<OcrResult> runOcr() override;

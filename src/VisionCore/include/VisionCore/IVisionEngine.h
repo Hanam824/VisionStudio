@@ -38,6 +38,15 @@ struct PreprocessOptions {
     bool  perspectiveCorrect = false;  ///< Attempt perspective correction.
 };
 
+// ── ImageData ───────────────────────────────────────────────────────────────
+struct ImageData {
+    std::vector<uint8_t> buffer;
+    int width = 0;
+    int height = 0;
+    int channels = 0;
+    int step = 0;
+};
+
 // ── IVisionEngine (Abstract Interface) ──────────────────────────────────────
 /// Pure virtual interface for all vision/OCR operations.
 /// VisionApp interacts ONLY through this interface (LGPLv3 compliance).
@@ -59,14 +68,9 @@ public:
     /// Load an image from disk. Returns true on success.
     virtual bool loadImage(const std::string& filePath) = 0;
 
-    /// Get the raw pixel data of the currently loaded (or processed) image.
+    /// Get a deep copy of the currently loaded (or processed) image data.
     /// The returned buffer is in BGR format (OpenCV default).
-    /// @param[out] width   Image width in pixels.
-    /// @param[out] height  Image height in pixels.
-    /// @param[out] channels Number of channels (typically 3).
-    /// @return Pointer to pixel data (owned by engine, valid until next call).
-    [[nodiscard]] virtual const uint8_t* getImageData(
-        int& width, int& height, int& channels) const = 0;
+    [[nodiscard]] virtual ImageData getImageData() const = 0;
 
     // ── Preprocessing ───────────────────────────────────────────────────
     /// Apply preprocessing to the loaded image.
