@@ -3,15 +3,23 @@
     "name": "vision-studio",
     "version-semver": "0.1.0",
     "description": "Cross-platform OCR & Image Processing Studio",
+    "$comment": "TODO: ncnn is commented out for now, but will be used in the future.",
     "dependencies": [
         {
             "name": "libjpeg-turbo",
             "default-features": false,
             "features": ["jpeg8"]
         },
-        "opencv4",
-        "qtbase",
-        "ncnn",
+        {
+            "name": "opencv4",
+            "default-features": false,
+            "features": ["jpeg", "png", "tiff", "webp"]
+        },
+        {
+            "name": "qtbase",
+            "default-features": false,
+            "features": ["widgets", "concurrent", "jpeg", "png"]
+        },
         "gtest"
     ],
     "overrides": [],
