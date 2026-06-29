@@ -22,6 +22,7 @@
             "generator": "Ninja",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_UNITY_BUILD": "ON",
                 "CMAKE_TOOLCHAIN_FILE": {
                     "type": "FILEPATH",
                     "value": "${sourceDir}/third-party/vcpkg/scripts/buildsystems/vcpkg.cmake"
@@ -63,7 +64,8 @@
                     "value": "${sourceDir}/third-party/vcpkg/scripts/buildsystems/vcpkg.cmake"
                 },
                 "VCPKG_TARGET_TRIPLET": "x64-osx",
-                "CMAKE_OSX_ARCHITECTURES": "x86_64"
+                "CMAKE_OSX_ARCHITECTURES": "x86_64",
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "13.0"
             },
             "condition": {
                 "type": "equals",
@@ -83,7 +85,8 @@
                     "value": "${sourceDir}/third-party/vcpkg/scripts/buildsystems/vcpkg.cmake"
                 },
                 "VCPKG_TARGET_TRIPLET": "arm64-osx",
-                "CMAKE_OSX_ARCHITECTURES": "arm64"
+                "CMAKE_OSX_ARCHITECTURES": "arm64",
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "13.0"
             },
             "condition": {
                 "type": "equals",
@@ -148,7 +151,8 @@
             "binaryDir": "${sourceDir}/build/ci-macos-arm64",
             "cacheVariables": {
                 "VCPKG_TARGET_TRIPLET": "arm64-osx",
-                "CMAKE_OSX_ARCHITECTURES": "arm64"
+                "CMAKE_OSX_ARCHITECTURES": "arm64",
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "13.0"
             },
             "condition": {
                 "type": "equals",
@@ -163,7 +167,8 @@
             "binaryDir": "${sourceDir}/build/ci-macos-x64",
             "cacheVariables": {
                 "VCPKG_TARGET_TRIPLET": "x64-osx",
-                "CMAKE_OSX_ARCHITECTURES": "x86_64"
+                "CMAKE_OSX_ARCHITECTURES": "x86_64",
+                "CMAKE_OSX_DEPLOYMENT_TARGET": "13.0"
             },
             "condition": {
                 "type": "equals",

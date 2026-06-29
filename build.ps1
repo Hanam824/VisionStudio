@@ -6,11 +6,12 @@
 $ErrorActionPreference = "Stop"
 
 # 1. Detect platform
-$Preset = if ($IsWindows -or $env:OS -eq "Windows_NT") { "windows-x64" }
-          elseif ($IsMacOS) { 
-              if ((Get-CimInstance Win32_Processor).Architecture -eq 12 -or (uname -m) -match "arm64") { "macos-arm64" } else { "macos-x64" } 
-          }
-          else { "linux-deb-x64" }
+if (-not ($IsWindows -or $env:OS -eq "Windows_NT")) {
+    Write-Error "This script is for Windows only. Please use run_build.sh for macOS/Linux."
+    exit 1
+}
+
+$Preset = "windows-x64"
 
 Write-Host ">>> Vision Studio Build | Preset: $Preset" -ForegroundColor Cyan
 
@@ -20,7 +21,7 @@ if (-not (Test-Path $CachePath)) { New-Item -ItemType Directory -Path $CachePath
 $env:VCPKG_BINARY_SOURCES = "clear;files,$CachePath,readwrite"
 
 # 2. Check and initialize vcpkg submodule if empty
-if (-not (Test-Path "./third-party/vcpkg/bootstrap-vcpkg.bat") -and -not (Test-Path "./third-party/vcpkg/bootstrap-vcpkg.sh")) {
+if (-not (Test-Path "./third-party/vcpkg/bootstrap-vcpkg.bat")) {
     Write-Host ">>> vcpkg submodule is empty! Initializing git submodules..." -ForegroundColor Yellow
     git submodule update --init --recursive
     if ($LASTEXITCODE -ne 0) {
@@ -30,13 +31,9 @@ if (-not (Test-Path "./third-party/vcpkg/bootstrap-vcpkg.bat") -and -not (Test-P
 }
 
 # 3. Bootstrap vcpkg if needed
-if (-not (Test-Path "./third-party/vcpkg/vcpkg.exe") -and -not (Test-Path "./third-party/vcpkg/vcpkg")) {
+if (-not (Test-Path "./third-party/vcpkg/vcpkg.exe")) {
     Write-Host ">>> Bootstrapping vcpkg..." -ForegroundColor Yellow
-    if ($IsWindows -or $env:OS -eq "Windows_NT") {
-        & ./third-party/vcpkg/bootstrap-vcpkg.bat -disableMetrics
-    } else {
-        & ./third-party/vcpkg/bootstrap-vcpkg.sh -disableMetrics
-    }
+    & ./third-party/vcpkg/bootstrap-vcpkg.bat -disableMetrics
 }
 
 # 4. Configure
@@ -52,4 +49,4 @@ Write-Host ">>> Building Release..." -ForegroundColor Green
 cmake --build --preset "$Preset" --parallel
 
 Write-Host ">>> Done! Check /bin/Debug and /bin/Release" -ForegroundColor White
-if ($IsWindows -or $env:OS -eq "Windows_NT") { Pause }
+Pause

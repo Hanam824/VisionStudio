@@ -22,8 +22,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     else
         PRESET="macos-x64"
     fi
-    # Ensure macOS Ventura 13 is the minimum supported version
-    export MACOSX_DEPLOYMENT_TARGET="13.0"
 else
     if command -v dpkg >/dev/null 2>&1; then
         PRESET="linux-deb-x64"
@@ -36,7 +34,7 @@ fi
 
 echo -e "\033[36m>>> Vision Studio Build | Preset: $PRESET\033[0m"
 
-# 2. macOS dependency installation
+# 2. Dependency installation / checks
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo -e "\033[33m>>> Checking macOS dependencies...\033[0m"
     
@@ -60,6 +58,28 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
             brew install "$pkg"
         fi
     done
+else
+    echo -e "\033[33m>>> Checking Linux dependencies...\033[0m"
+    MISSING_PKGS=""
+    if ! command -v cmake &> /dev/null; then MISSING_PKGS="$MISSING_PKGS cmake"; fi
+    if ! command -v ninja &> /dev/null; then MISSING_PKGS="$MISSING_PKGS ninja-build"; fi
+    if ! command -v git &> /dev/null; then MISSING_PKGS="$MISSING_PKGS git"; fi
+    if ! command -v curl &> /dev/null; then MISSING_PKGS="$MISSING_PKGS curl"; fi
+    if ! command -v zip &> /dev/null; then MISSING_PKGS="$MISSING_PKGS zip"; fi
+    if ! command -v unzip &> /dev/null; then MISSING_PKGS="$MISSING_PKGS unzip"; fi
+    if ! command -v tar &> /dev/null; then MISSING_PKGS="$MISSING_PKGS tar"; fi
+    if ! command -v pkg-config &> /dev/null; then MISSING_PKGS="$MISSING_PKGS pkg-config"; fi
+    
+    if [ -n "$MISSING_PKGS" ]; then
+        echo -e "\033[31m>>> Missing required tools:$MISSING_PKGS\033[0m"
+        echo -e "\033[33m>>> Please install them using your package manager.\033[0m"
+        if command -v apt-get &> /dev/null; then
+            echo -e "    Example: sudo apt-get install build-essential$MISSING_PKGS"
+        elif command -v dnf &> /dev/null; then
+            echo -e "    Example: sudo dnf install gcc-c++$MISSING_PKGS"
+        fi
+        exit 1
+    fi
 fi
 
 # 3. Check and initialize vcpkg submodule if empty
@@ -76,12 +96,7 @@ fi
 
 # 4. Configure
 echo -e "\033[33m>>> Configuring...\033[0m"
-if [[ "$OSTYPE" == "darwin"* ]]; then
-    # We pass CMAKE_OSX_DEPLOYMENT_TARGET to ensure it's explicitly set for CMake
-    cmake --preset "$PRESET" -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0
-else
-    cmake --preset "$PRESET"
-fi
+cmake --preset "$PRESET"
 
 # 5. Build Debug
 # echo -e "\033[33m>>> Building Debug...\033[0m"
