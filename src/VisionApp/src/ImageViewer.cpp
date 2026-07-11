@@ -66,6 +66,55 @@ void ImageViewer::setImageFromData(const uint8_t* imageData, int width, int heig
     setImage(img);
 }
 
+void ImageViewer::clearOcrResults() {
+    for (auto* item : m_ocrBoxItems) {
+        if (item && m_scene) {
+            m_scene->removeItem(item);
+            delete item;
+        }
+    }
+    m_ocrBoxItems.clear();
+}
+
+void ImageViewer::setOcrResults(const std::vector<vision::OcrResult>& results) {
+    clearOcrResults();
+
+    QPen pen(QColor(0, 220, 255, 220), 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin);
+    QBrush brush(QColor(0, 220, 255, 30));
+
+    for (size_t i = 0; i < results.size(); ++i) {
+        const auto& r = results[i];
+        auto* rectItem = m_scene->addRect(QRectF(r.x, r.y, r.w, r.h), pen, brush);
+        rectItem->setZValue(10.0);
+        rectItem->setToolTip(QString("OCR #%1 [%2%]: %3")
+                             .arg(i + 1)
+                             .arg(static_cast<int>(r.confidence * 100))
+                             .arg(QString::fromStdString(r.text)));
+        rectItem->setData(0, static_cast<int>(i));
+        m_ocrBoxItems.push_back(rectItem);
+    }
+}
+
+void ImageViewer::highlightOcrIndex(int index) {
+    for (size_t i = 0; i < m_ocrBoxItems.size(); ++i) {
+        auto* item = m_ocrBoxItems[i];
+        if (!item) continue;
+        if (static_cast<int>(i) == index) {
+            QPen highlightPen(QColor(255, 160, 0, 255), 3);
+            QBrush highlightBrush(QColor(255, 160, 0, 80));
+            item->setPen(highlightPen);
+            item->setBrush(highlightBrush);
+            item->setZValue(20.0);
+        } else {
+            QPen normalPen(QColor(0, 220, 255, 220), 2);
+            QBrush normalBrush(QColor(0, 220, 255, 30));
+            item->setPen(normalPen);
+            item->setBrush(normalBrush);
+            item->setZValue(10.0);
+        }
+    }
+}
+
 void ImageViewer::fitToView() {
     if (m_pixmapItem->pixmap().isNull()) return;
     fitInView(m_pixmapItem, Qt::KeepAspectRatio);
@@ -93,6 +142,19 @@ void ImageViewer::wheelEvent(QWheelEvent* event) {
 }
 
 void ImageViewer::mousePressEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        QPointF scenePos = mapToScene(event->position().toPoint());
+        for (size_t i = 0; i < m_ocrBoxItems.size(); ++i) {
+            auto* item = m_ocrBoxItems[i];
+            if (item && item->rect().contains(scenePos)) {
+                highlightOcrIndex(static_cast<int>(i));
+                emit ocrBoxClicked(static_cast<int>(i));
+                event->accept();
+                return;
+            }
+        }
+    }
+
     if (event->button() == Qt::MiddleButton) {
         m_panning = true;
         m_panStart = event->position().toPoint();
