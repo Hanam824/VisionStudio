@@ -14,11 +14,12 @@ class QToolBar;
 
 class ImageViewer;
 class LogConsole;
+class ReceiptOcrPanel;
 
 // ── MainWindow ──────────────────────────────────────────────────────────────
 /// Top-level application window.
-/// Dynamically loads VisionCore and provides toolbar, image viewer, and log
-/// console.
+/// Dynamically loads VisionCore and provides toolbar, image viewer, log
+/// console, and receipt/OCR inspector panel.
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
@@ -28,6 +29,7 @@ public:
 
 private slots:
     void onOpenImage();
+    void onOpenSampleReceipt();
     void onPreprocess();
     void onRunOcr();
     void onAbout();
@@ -43,12 +45,14 @@ private:
     void updateImageDisplay();
 
     // ── UI Widgets ──────────────────────────────────────────────────────
-    ImageViewer* m_imageViewer  = nullptr;
-    LogConsole*  m_logConsole   = nullptr;
-    QToolBar*    m_toolBar      = nullptr;
+    ImageViewer*     m_imageViewer  = nullptr;
+    LogConsole*      m_logConsole   = nullptr;
+    ReceiptOcrPanel* m_receiptPanel = nullptr;
+    QToolBar*        m_toolBar      = nullptr;
 
     // ── Actions ─────────────────────────────────────────────────────────
     QAction* m_actOpen       = nullptr;
+    QAction* m_actOpenSample = nullptr;
     QAction* m_actPreprocess = nullptr;
     QAction* m_actRunOcr     = nullptr;
     QAction* m_actAbout      = nullptr;

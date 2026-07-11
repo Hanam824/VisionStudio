@@ -1,6 +1,7 @@
 #include "VisionApp/MainWindow.h"
 #include "VisionApp/ImageViewer.h"
 #include "VisionApp/LogConsole.h"
+#include "VisionApp/ReceiptOcrPanel.h"
 
 #include <QtConcurrent/QtConcurrent>
 #include <QFutureWatcher>
@@ -56,6 +57,10 @@ void MainWindow::createActions() {
     m_actOpen->setStatusTip(tr("Open an image file"));
     connect(m_actOpen, &QAction::triggered, this, &MainWindow::onOpenImage);
 
+    m_actOpenSample = new QAction(tr("Open &Sample Receipt"), this);
+    m_actOpenSample->setStatusTip(tr("Load and OCR a sample receipt image"));
+    connect(m_actOpenSample, &QAction::triggered, this, &MainWindow::onOpenSampleReceipt);
+
     m_actPreprocess = new QAction(tr("&Preprocess"), this);
     m_actPreprocess->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_P));
     m_actPreprocess->setStatusTip(tr("Run preprocessing pipeline on current image"));
@@ -79,6 +84,7 @@ void MainWindow::createActions() {
 void MainWindow::createMenus() {
     auto* fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(m_actOpen);
+    fileMenu->addAction(m_actOpenSample);
     fileMenu->addSeparator();
     fileMenu->addAction(m_actQuit);
 
@@ -96,6 +102,7 @@ void MainWindow::createToolBar() {
     m_toolBar->setIconSize(QSize(24, 24));
 
     m_toolBar->addAction(m_actOpen);
+    m_toolBar->addAction(m_actOpenSample);
     m_toolBar->addSeparator();
     m_toolBar->addAction(m_actPreprocess);
     m_toolBar->addAction(m_actRunOcr);
@@ -115,8 +122,21 @@ void MainWindow::createDockWidgets() {
 
     addDockWidget(Qt::BottomDockWidgetArea, logDock);
 
-    // Add toggle to View menu.
+    // Receipt & OCR Inspector dock panel (Right panel).
+    m_receiptPanel = new ReceiptOcrPanel(this);
+    addDockWidget(Qt::RightDockWidgetArea, m_receiptPanel);
+
+    // Connect interactive highlights between image viewer and right panel
+    connect(m_imageViewer, &ImageViewer::ocrBoxClicked, m_receiptPanel, &ReceiptOcrPanel::selectOcrLine);
+    connect(m_receiptPanel, &ReceiptOcrPanel::ocrLineSelected, m_imageViewer, &ImageViewer::highlightOcrIndex);
+    connect(m_receiptPanel, &ReceiptOcrPanel::ocrResultsModified, m_imageViewer, &ImageViewer::setOcrResults);
+    connect(m_receiptPanel, &ReceiptOcrPanel::statusMessageRequested, this, [this](const QString& msg) {
+        statusBar()->showMessage(msg, 5000);
+    });
+
+    // Add toggles to View menu.
     auto* viewMenu = menuBar()->addMenu(tr("&View"));
+    viewMenu->addAction(m_receiptPanel->toggleViewAction());
     viewMenu->addAction(logDock->toggleViewAction());
 }
 
@@ -126,22 +146,20 @@ bool MainWindow::loadVisionCore() {
     // Try to load VisionCore from the same directory as the executable.
     // Debug builds use the "d" postfix (e.g. VisionCored.dll).
 #ifndef NDEBUG
-    #ifdef _WIN32
-        m_coreLib.setFileName("VisionCored");
-    #else
-        m_coreLib.setFileName("libVisionCored");
-    #endif
+    QString primaryLib = "VisionCored";
+    QString fallbackLib = "VisionCore";
 #else
-    #ifdef _WIN32
-        m_coreLib.setFileName("VisionCore");
-    #else
-        m_coreLib.setFileName("libVisionCore");
-    #endif
+    QString primaryLib = "VisionCore";
+    QString fallbackLib = "VisionCored";
 #endif
 
+    m_coreLib.setFileName(primaryLib);
     if (!m_coreLib.load()) {
-        m_logConsole->appendMessage(3, "Failed to load VisionCore: " + m_coreLib.errorString());
-        return false;
+        m_coreLib.setFileName(fallbackLib);
+        if (!m_coreLib.load()) {
+            m_logConsole->appendMessage(3, "Failed to load VisionCore library: " + m_coreLib.errorString());
+            return false;
+        }
     }
 
     // Resolve factory function.
@@ -195,6 +213,8 @@ void MainWindow::onOpenImage() {
         m_actPreprocess->setEnabled(true);
         m_actRunOcr->setEnabled(true);
         statusBar()->showMessage(tr("Loaded: %1").arg(path));
+        // Automatically run OCR detection and parsing on image load
+        onRunOcr();
     } else {
         // Fallback: display directly if engine unavailable.
         QImage img(path);
@@ -203,6 +223,31 @@ void MainWindow::onOpenImage() {
             statusBar()->showMessage(tr("Loaded (no engine): %1").arg(path));
         } else {
             statusBar()->showMessage(tr("Failed to load image."));
+        }
+    }
+}
+
+void MainWindow::onOpenSampleReceipt() {
+    QString path = "sample_receipt.png";
+    if (!QFile::exists(path)) {
+        // Create a basic sample receipt image on disk if not found
+        QImage sampleImg(420, 650, QImage::Format_RGB888);
+        sampleImg.fill(QColor(248, 248, 245));
+        sampleImg.save(path);
+    }
+
+    m_currentImagePath = path;
+    if (m_engine && m_engine->loadImage(path.toStdString())) {
+        updateImageDisplay();
+        m_actPreprocess->setEnabled(true);
+        m_actRunOcr->setEnabled(true);
+        statusBar()->showMessage(tr("Loaded Sample Receipt: %1").arg(path));
+        onRunOcr();
+    } else {
+        QImage img(path);
+        if (!img.isNull()) {
+            m_imageViewer->setImage(img);
+            statusBar()->showMessage(tr("Loaded Sample Receipt (no engine): %1").arg(path));
         }
     }
 }
@@ -251,6 +296,10 @@ void MainWindow::onRunOcr() {
         if (results.empty()) {
             m_logConsole->appendMessage(2, "OCR returned no results.");
             statusBar()->showMessage(tr("OCR: no text detected."));
+            m_imageViewer->clearOcrResults();
+            if (m_receiptPanel) {
+                m_receiptPanel->clearData();
+            }
         } else {
             for (const auto& r : results) {
                 QString msg = QString("OCR [%.2f]: \"%1\"")
@@ -259,6 +308,11 @@ void MainWindow::onRunOcr() {
             }
             statusBar()->showMessage(
                 tr("OCR: %1 region(s) detected.").arg(results.size()));
+
+            m_imageViewer->setOcrResults(results);
+            if (m_receiptPanel) {
+                m_receiptPanel->setOcrResults(results);
+            }
         }
         m_actPreprocess->setEnabled(true);
         m_actRunOcr->setEnabled(true);

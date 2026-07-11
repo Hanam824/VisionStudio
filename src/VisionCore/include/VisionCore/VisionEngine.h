@@ -1,17 +1,14 @@
 #pragma once
 
 #include "IVisionEngine.h"
-#include "ImageProcessor.h"
-
-#include <atomic>
-#include <mutex>
 
 namespace vision {
 
 // ── VisionEngine ────────────────────────────────────────────────────────────
 /// Concrete implementation of IVisionEngine.
 /// Delegates image work to ImageProcessor and inference to ncnn/ONNX.
-class VisionEngine final : public IVisionEngine {
+/// Uses Pimpl idiom to keep internal implementation details private across DLL boundary.
+class VISIONCORE_API VisionEngine final : public IVisionEngine {
 public:
     VisionEngine();
     ~VisionEngine() override;
@@ -37,10 +34,8 @@ public:
 private:
     void log(LogLevel level, const std::string& msg) const;
 
-    ImageProcessor   m_processor;       ///< Image preprocessing pipeline.
-    LogCallback      m_logCallback;     ///< UI log sink.
-    std::atomic_bool m_ready{false};    ///< Engine state flag.
-    mutable std::mutex m_mutex;         ///< Thread safety for shared state.
+    struct Impl;
+    Impl* m_impl;
 };
 
 } // namespace vision
