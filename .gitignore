@@ -47,7 +47,11 @@ vcpkg_installed/
 
 # ── IDE / Editor ─────────────────────────────────────────────────────────────
 .vs/
-.vscode/
+.vscode/*\r
+!.vscode/launch.json\r
+!.vscode/tasks.json\r
+!.vscode/settings.json\r
+!.vscode/extensions.json
 .idea/
 .gitnexus/
 *.user
