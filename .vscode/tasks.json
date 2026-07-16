@@ -1,0 +1,153 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        // ── Windows ─────────────────────────────────────────────────
+        {
+            "label": "Configure: Windows x64",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--preset", "windows-x64"],
+            "problemMatcher": [],
+            "detail": "CMake configure for Windows x64 (Visual Studio generator)"
+        },
+        {
+            "label": "Build: Debug (Windows)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "--preset", "windows-x64-debug",
+                "--parallel"
+            ],
+            "group": "build",
+            "problemMatcher": "$msCompile",
+            "detail": "Build Debug binaries using MSVC"
+        },
+        {
+            "label": "Build: Release (Windows)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "--preset", "windows-x64",
+                "--parallel"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": "$msCompile",
+            "detail": "Build Release binaries using MSVC"
+        },
+
+        // ── Linux ───────────────────────────────────────────────────
+        {
+            "label": "Configure: Linux x64 (Debug)",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--preset", "linux-x64-debug"],
+            "problemMatcher": [],
+            "detail": "CMake configure for Linux x64 Debug (Ninja generator)"
+        },
+        {
+            "label": "Build: Debug (Linux)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "--preset", "linux-x64-debug",
+                "--parallel"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "detail": "Build Debug binaries using GCC/Clang + Ninja"
+        },
+        {
+            "label": "Configure: Linux x64 (DEB Release)",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--preset", "linux-deb-x64"],
+            "problemMatcher": [],
+            "detail": "CMake configure for Linux x64 DEB Release"
+        },
+        {
+            "label": "Build: Release (Linux DEB)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "--preset", "linux-deb-x64",
+                "--parallel"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "detail": "Build Release DEB binaries using GCC/Clang + Ninja"
+        },
+
+        // ── macOS ───────────────────────────────────────────────────
+        {
+            "label": "Configure: macOS arm64",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--preset", "macos-arm64"],
+            "problemMatcher": [],
+            "detail": "CMake configure for macOS Apple Silicon (Xcode generator)"
+        },
+        {
+            "label": "Configure: macOS x64",
+            "type": "shell",
+            "command": "cmake",
+            "args": ["--preset", "macos-x64"],
+            "problemMatcher": [],
+            "detail": "CMake configure for macOS Intel (Xcode generator)"
+        },
+        {
+            "label": "Build: Debug (macOS)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "--preset", "macos-arm64-debug",
+                "--parallel"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "detail": "Build Debug binaries for macOS Apple Silicon"
+        },
+        {
+            "label": "Build: Release (macOS)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "--preset", "macos-arm64",
+                "--parallel"
+            ],
+            "group": "build",
+            "problemMatcher": "$gcc",
+            "detail": "Build Release binaries for macOS Apple Silicon"
+        },
+
+        // ── Tests (cross-platform) ─────────────────────────────────
+        {
+            "label": "Run Tests (CTest)",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--test-dir", "${workspaceFolder}/build/${input:testBuildDir}",
+                "--output-on-failure"
+            ],
+            "group": "test",
+            "detail": "Run all GoogleTest tests via CTest"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "testBuildDir",
+            "type": "pickString",
+            "description": "Select the build directory to run tests from",
+            "options": [
+                "windows-x64",
+                "linux-x64-debug",
+                "linux-deb-x64",
+                "macos-arm64",
+                "macos-x64"
+            ],
+            "default": "windows-x64"
+        }
+    ]
+}
