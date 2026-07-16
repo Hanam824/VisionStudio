@@ -92,6 +92,8 @@ void MainWindow::createMenus() {
     processMenu->addAction(m_actPreprocess);
     processMenu->addAction(m_actRunOcr);
 
+    m_viewMenu = menuBar()->addMenu(tr("&View"));
+
     auto* helpMenu = menuBar()->addMenu(tr("&Help"));
     helpMenu->addAction(m_actAbout);
 }
@@ -135,9 +137,8 @@ void MainWindow::createDockWidgets() {
     });
 
     // Add toggles to View menu.
-    auto* viewMenu = menuBar()->addMenu(tr("&View"));
-    viewMenu->addAction(m_receiptPanel->toggleViewAction());
-    viewMenu->addAction(logDock->toggleViewAction());
+    m_viewMenu->addAction(m_receiptPanel->toggleViewAction());
+    m_viewMenu->addAction(logDock->toggleViewAction());
 }
 
 // ── Dynamic Loading ─────────────────────────────────────────────────────────

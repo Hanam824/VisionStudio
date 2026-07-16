@@ -9,6 +9,7 @@
 
 class QAction;
 class QLabel;
+class QMenu;
 class QStatusBar;
 class QToolBar;
 
@@ -49,6 +50,7 @@ private:
     LogConsole*      m_logConsole   = nullptr;
     ReceiptOcrPanel* m_receiptPanel = nullptr;
     QToolBar*        m_toolBar      = nullptr;
+    QMenu*           m_viewMenu     = nullptr;
 
     // ── Actions ─────────────────────────────────────────────────────────
     QAction* m_actOpen       = nullptr;
