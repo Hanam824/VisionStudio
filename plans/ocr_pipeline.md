@@ -39,7 +39,7 @@ Backend availability is detected at CMake configure time. VisionEngine selects t
 
 ---
 
-## UI Design (VisionApp — Qt 5)
+## UI Design (VisionApp — Qt 6)
 
 ### Window Layout
 

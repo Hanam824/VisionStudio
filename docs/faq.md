@@ -18,7 +18,7 @@ git submodule update --init --recursive
 
 **A:** Ensure you have the Visual Studio 2022 *"Desktop development with C++"* workload installed. vcpkg needs the MSVC compiler and Windows SDK.
 
-### Q: CMake can't find OpenCV or Qt5
+### Q: CMake can't find OpenCV or Qt6
 
 **A:** These are installed automatically by vcpkg during the first configure. The initial build may take 15-30 minutes while vcpkg compiles dependencies. Let it finish.
 

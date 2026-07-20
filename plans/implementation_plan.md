@@ -3,7 +3,7 @@
 ## Overview
 Build a cross-platform OCR & Image Processing application from scratch per MASTER_PLAN.md.
 
-**Tech Stack:** C++17, Qt 5.15, OpenCV 4, ncnn/ONNX Runtime, vcpkg, CMake
+**Tech Stack:** C++17, Qt 6, OpenCV 4, ncnn/ONNX Runtime, vcpkg, CMake
 
 ## Architecture
 

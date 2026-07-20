@@ -1,7 +1,7 @@
 # MASTER PLAN — Vision Studio
 
 > **Project**: Cross-platform OCR & Image Processing Studio
-> **Tech Stack**: C++17 · Qt 5.15 · OpenCV 4 · ncnn / ONNX Runtime · vcpkg · CMake
+> **Tech Stack**: C++17 · Qt 6 · OpenCV 4 · ncnn / ONNX Runtime · vcpkg · CMake
 > **License**: LGPLv3 · **Version**: 0.1.0
 > **Primary IDE**: Visual Studio Community 2022 (Windows)
 
@@ -57,7 +57,7 @@ In VS 2022: **select preset from toolbar → press F5**.
 
 ```
  VisionApp (EXE)  ──QLibrary──▶  VisionCore (DLL)
-   Qt 5 UI                        IVisionEngine (interface)
+   Qt 6 UI                        IVisionEngine (interface)
    Dark Theme                     ImageProcessor (OpenCV)
    Log Console                    Inference (ncnn/ONNX)
 ```

@@ -15,7 +15,7 @@
     "description": "Cross-platform OCR & Image Processing Studio",
     "dependencies": [
         "opencv4",
-        "qt5-base",
+        "qtbase",
         "ncnn",
         "gtest"
     ],
@@ -27,7 +27,7 @@
 | Package | Purpose | Used By |
 |---------|---------|---------|
 | `opencv4` | Image loading, preprocessing (grayscale, threshold, perspective) | VisionCore |
-| `qt5-base` | Cross-platform UI framework (Widgets, Core, Gui) | VisionApp |
+| `qtbase` | Cross-platform UI framework (Widgets, Core, Gui) | VisionApp |
 | `ncnn` | Lightweight neural network inference for OCR | VisionCore |
 | `gtest` | Unit testing framework | tests/ |
 
@@ -112,7 +112,7 @@ endif()
 
 # Dependencies
 find_package(OpenCV 4 REQUIRED COMPONENTS core imgproc imgcodecs)
-find_package(Qt5 REQUIRED COMPONENTS Widgets Core Gui)
+find_package(Qt6 REQUIRED COMPONENTS Widgets Core Gui)
 find_package(ncnn QUIET)
 find_package(onnxruntime QUIET)
 find_package(GTest QUIET)

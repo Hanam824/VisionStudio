@@ -9,7 +9,7 @@
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
 │                        VisionApp (Executable)                       │
-│  Qt 5 Widgets · Dark Theme · Toolbar · Image Viewer · Log Console  │
+│  Qt 6 Widgets · Dark Theme · Toolbar · Image Viewer · Log Console  │
 │                                                                     │
 │  Loads VisionCore at runtime via QLibrary / dlopen                  │
 │  Communicates ONLY through IVisionEngine abstract interface         │
@@ -26,7 +26,7 @@
 
 ## Why This Design?
 
-1. **LGPLv3 Compliance** — Qt 5 is LGPL. Keeping AI/image code in a separate DLL (`VisionCore`) and communicating via abstract interfaces means VisionApp links dynamically, so neither module imposes licensing constraints on the other.
+1. **LGPLv3 Compliance** — Qt 6 is LGPL. Keeping AI/image code in a separate DLL (`VisionCore`) and communicating via abstract interfaces means VisionApp links dynamically, so neither module imposes licensing constraints on the other.
 
 2. **Plugin Architecture** — Third parties can provide alternative `IVisionEngine` implementations without modifying VisionApp.
 
