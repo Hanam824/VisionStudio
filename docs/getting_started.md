@@ -87,7 +87,7 @@ Double-click or run from terminal. The dark-themed UI will open with:
 | Problem | Solution |
 |---------|----------|
 | `vcpkg` packages fail to build | Ensure VS 2022 C++ workload is installed. Run `.\third-party\vcpkg\bootstrap-vcpkg.bat` again. |
-| CMake can't find Qt5 | vcpkg installs Qt automatically — wait for the first configure to finish. |
+| CMake can't find Qt6 | vcpkg installs Qt automatically — wait for the first configure to finish. |
 | "VisionCore.dll not found" at runtime | Ensure both `.exe` and `.dll` are in `bin/[Config]/`. The CMake build does this automatically. |
 
 See [FAQ](faq.md) for more.

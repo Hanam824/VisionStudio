@@ -22,7 +22,7 @@ Welcome to the **Vision Studio** documentation. This folder contains all user-fa
 
 - **Primary IDE**: Visual Studio Community 2022
 - **Language**: C++17
-- **UI Framework**: Qt 5.15
+- **UI Framework**: Qt 6
 - **Image Processing**: OpenCV 4
 - **AI Inference**: ncnn / ONNX Runtime
 - **Build System**: CMake + vcpkg (bundled as submodule)
