@@ -181,7 +181,12 @@ void ReceiptOcrPanel::setOcrResults(const std::vector<vision::OcrResult>& result
 
     // Parse into structured receipt
     vision::ReceiptData receiptData = vision::parseReceiptOcr(results);
+    applyParsedReceipt(receiptData);
 
+    m_updatingTable = false;
+}
+
+void ReceiptOcrPanel::applyParsedReceipt(const vision::ReceiptData& receiptData) {
     m_merchantEdit->setText(QString::fromStdString(receiptData.merchant));
     m_dateEdit->setText(QString::fromStdString(receiptData.date));
     m_invoiceEdit->setText(QString::fromStdString(receiptData.invoiceNumber));
@@ -198,8 +203,6 @@ void ReceiptOcrPanel::setOcrResults(const std::vector<vision::OcrResult>& result
     m_subtotalSpin->setValue(receiptData.subtotal);
     m_taxSpin->setValue(receiptData.tax);
     m_totalSpin->setValue(receiptData.total);
-
-    m_updatingTable = false;
 }
 
 void ReceiptOcrPanel::selectOcrLine(int index) {
@@ -335,24 +338,11 @@ void ReceiptOcrPanel::onOcrItemChanged(QListWidgetItem* item) {
     int row = m_ocrListWidget->row(item);
     if (row >= 0 && row < static_cast<int>(m_rawOcrResults.size())) {
         m_rawOcrResults[row].text = item->text().toStdString();
-        // Re-parse structured receipt from modified OCR lines
-        vision::ReceiptData receiptData = vision::parseReceiptOcr(m_rawOcrResults);
-        m_merchantEdit->setText(QString::fromStdString(receiptData.merchant));
-        m_dateEdit->setText(QString::fromStdString(receiptData.date));
-        m_invoiceEdit->setText(QString::fromStdString(receiptData.invoiceNumber));
 
+        // Re-parse structured receipt from modified OCR lines
         m_updatingTable = true;
-        m_itemsTable->setRowCount(static_cast<int>(receiptData.items.size()));
-        for (size_t i = 0; i < receiptData.items.size(); ++i) {
-            const auto& ri = receiptData.items[i];
-            m_itemsTable->setItem(static_cast<int>(i), 0, new QTableWidgetItem(QString::fromStdString(ri.description)));
-            m_itemsTable->setItem(static_cast<int>(i), 1, new QTableWidgetItem(QString::number(ri.quantity)));
-            m_itemsTable->setItem(static_cast<int>(i), 2, new QTableWidgetItem(QString::number(ri.unitPrice, 'f', 2)));
-            m_itemsTable->setItem(static_cast<int>(i), 3, new QTableWidgetItem(QString::number(ri.totalPrice, 'f', 2)));
-        }
-        m_subtotalSpin->setValue(receiptData.subtotal);
-        m_taxSpin->setValue(receiptData.tax);
-        m_totalSpin->setValue(receiptData.total);
+        vision::ReceiptData receiptData = vision::parseReceiptOcr(m_rawOcrResults);
+        applyParsedReceipt(receiptData);
         m_updatingTable = false;
 
         emit ocrResultsModified(m_rawOcrResults);

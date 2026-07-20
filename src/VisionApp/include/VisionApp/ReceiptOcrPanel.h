@@ -15,7 +15,9 @@ class QPushButton;
 class QTabWidget;
 
 // ── ReceiptOcrPanel ─────────────────────────────────────────────────────────
-/// Right dock panel for inspecting and modifying parsed receipt data and raw OCR results.
+/**
+ * @brief Right dock panel for inspecting and modifying parsed receipt data and raw OCR results.
+ */
 class ReceiptOcrPanel : public QDockWidget {
     Q_OBJECT
 
@@ -23,23 +25,40 @@ public:
     explicit ReceiptOcrPanel(QWidget* parent = nullptr);
     ~ReceiptOcrPanel() override = default;
 
-    /// Populate the panel from OCR results.
+    /**
+     * @brief Populate the panel from OCR results.
+     * @param results Detected OCR text regions; parsed into structured receipt data.
+     */
     void setOcrResults(const std::vector<vision::OcrResult>& results);
 
-    /// Clear all data.
+    /**
+     * @brief Clear all data, including form fields, items table, totals, and the raw OCR list.
+     */
     void clearData();
 
-    /// Highlight a specific OCR line index.
+    /**
+     * @brief Highlight a specific OCR line index in the raw OCR list.
+     * @param index Zero-based index into the raw OCR results. No-op if out of range.
+     */
     void selectOcrLine(int index);
 
 signals:
-    /// Emitted when user selects an OCR line index in the list.
+    /**
+     * @brief Emitted when the user selects an OCR line index in the list.
+     * @param index Zero-based index of the selected OCR line.
+     */
     void ocrLineSelected(int index);
 
-    /// Emitted when the user edits, adds, or removes raw OCR lines.
+    /**
+     * @brief Emitted when the user edits, adds, or removes raw OCR lines.
+     * @param results The full, updated set of raw OCR results.
+     */
     void ocrResultsModified(const std::vector<vision::OcrResult>& results);
 
-    /// Emitted when data is copied to clipboard (for status bar updates).
+    /**
+     * @brief Emitted when data is copied to clipboard, for status bar updates.
+     * @param msg Human-readable status message to display.
+     */
     void statusMessageRequested(const QString& msg);
 
 private slots:
@@ -58,6 +77,12 @@ private:
     void setupUi();
     void updateTotalsFromTable();
     vision::ReceiptData collectCurrentReceiptData() const;
+
+    /**
+     * @brief Push parsed receipt data into the metadata fields, items table, and totals.
+     * @param receiptData Structured receipt data to display.
+     */
+    void applyParsedReceipt(const vision::ReceiptData& receiptData);
 
     // ── Form Controls ───────────────────────────────────────────────────
     QLineEdit*      m_merchantEdit      = nullptr;

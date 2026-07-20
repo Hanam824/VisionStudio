@@ -169,9 +169,6 @@ std::vector<OcrResult> VisionEngine::runOcr() {
     std::vector<std::vector<cv::Point>> contours;
     cv::findContours(grad, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
-    struct RectCandidate {
-        cv::Rect r;
-    };
     std::vector<cv::Rect> textRects;
 
     for (const auto& c : contours) {

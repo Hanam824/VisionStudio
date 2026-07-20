@@ -5,9 +5,13 @@
 namespace vision {
 
 // ── VisionEngine ────────────────────────────────────────────────────────────
-/// Concrete implementation of IVisionEngine.
-/// Delegates image work to ImageProcessor and inference to ncnn/ONNX.
-/// Uses Pimpl idiom to keep internal implementation details private across DLL boundary.
+/**
+ * @brief Concrete implementation of IVisionEngine.
+ *
+ * Delegates image work to ImageProcessor and inference to ncnn/ONNX.
+ * Uses the Pimpl idiom to keep internal implementation details private
+ * across the DLL boundary.
+ */
 class VISIONCORE_API VisionEngine final : public IVisionEngine {
 public:
     VisionEngine();
