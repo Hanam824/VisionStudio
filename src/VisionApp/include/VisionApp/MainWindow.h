@@ -18,9 +18,12 @@ class LogConsole;
 class ReceiptOcrPanel;
 
 // ── MainWindow ──────────────────────────────────────────────────────────────
-/// Top-level application window.
-/// Dynamically loads VisionCore and provides toolbar, image viewer, log
-/// console, and receipt/OCR inspector panel.
+/**
+ * @brief Top-level application window.
+ *
+ * Dynamically loads VisionCore and provides toolbar, image viewer, log
+ * console, and receipt/OCR inspector panel.
+ */
 class MainWindow : public QMainWindow {
     Q_OBJECT
 

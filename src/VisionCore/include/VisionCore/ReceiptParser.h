@@ -28,13 +28,25 @@ struct ReceiptData {
 };
 
 // ── Receipt Parser Function ─────────────────────────────────────────────────
-/// Parses raw OCR results into structured ReceiptData.
+/**
+ * @brief Parses raw OCR results into structured ReceiptData.
+ * @param ocrResults Detected OCR text regions, in any order.
+ * @return Structured receipt data (merchant, date, items, totals).
+ */
 VISIONCORE_API ReceiptData parseReceiptOcr(const std::vector<OcrResult>& ocrResults);
 
-/// Formats ReceiptData as clean readable Markdown/Text table.
+/**
+ * @brief Formats ReceiptData as a clean, readable Markdown/Text table.
+ * @param data Structured receipt data to format.
+ * @return Formatted text block.
+ */
 VISIONCORE_API std::string formatReceiptAsText(const ReceiptData& data);
 
-/// Formats ReceiptData as JSON string.
+/**
+ * @brief Formats ReceiptData as a JSON string.
+ * @param data Structured receipt data to format.
+ * @return JSON-formatted string.
+ */
 VISIONCORE_API std::string formatReceiptAsJson(const ReceiptData& data);
 
 } // namespace vision

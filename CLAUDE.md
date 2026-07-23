@@ -68,7 +68,7 @@ VisionApp (exe)  --QLibrary/dlopen at runtime-->  VisionCore (shared lib: Vision
 ```
 
 - `VisionApp` never includes VisionCore internals — only `VisionCore/IVisionEngine.h` and `VisionCore/Export.h`. It links `VisionCore` at build time for these interface types/symbols, but the actual implementation is loaded dynamically via `QLibrary::resolve("createVisionEngine")`, which returns a C-linkage factory (`CreateEngineFunc`) producing an `IVisionEngine*` wrapped in `std::unique_ptr`. This boundary exists for LGPLv3 compliance (Qt) and to allow alternate engine implementations without touching VisionApp.
-- `IVisionEngine` (`src/VisionCore/include/VisionCore/IVisionEngine.h`) is the entire contract: lifecycle (`initialize`/`shutdown`/`isReady`), image I/O (`loadImage`/`getImageData` — BGR buffer), `preprocess(PreprocessOptions)`, `runOcr() -> vector<OcrResult>`, and `setLogCallback(LogCallback)`. `VisionEngine` is the concrete implementation; it's thread-safe (`std::mutex` + `std::atomic_bool`), and its `LogCallback` may fire from any thread — VisionApp marshals it to the UI thread via `QMetaObject::invokeMethod` in `LogConsole`.
+- `IVisionEngine` (`src/VisionCore/include/VisionCore/IVisionEngine.h`) is the entire contract: lifecycle (`initialize`/`shutdown`/`isReady`), image I/O (`loadImage`/`getImageData` — BGR buffer), `preprocess(PreprocessOptions)`, `runOcr() -> vector<OcrResult>`, and `setLogCallback(LogCallback)`. `VisionEngine` is the concrete implementation; it's thread-safe (`std::mutex` + `std::atomic_bool`), and its `LogCallback` may fire from any thread — VisionApp marshals it to the UI thread via `QMetaObject::invokeMethod` in `LogConsole`. Internals (`ImageProcessor`, mutex/state) sit behind a Pimpl (`VisionEngine::Impl`) so they never cross the DLL boundary.
 - `ImageProcessor` implements a fluent/chaining OpenCV pipeline: `load().toGrayscale().applyThreshold(block, C).correctPerspective()`.
 - `ReceiptParser` (`src/VisionCore/include/VisionCore/ReceiptParser.h`) turns raw `OcrResult` vectors into structured `ReceiptData` (merchant, items, totals) and formats it as text or JSON; consumed by `VisionApp`'s `ReceiptOcrPanel`.
 - Inference backend availability (`VISIONCORE_HAS_NCNN` / `VISIONCORE_HAS_ONNXRT`) is detected at CMake configure time via `find_package(... QUIET)` in the root `CMakeLists.txt`; `runOcr()` is currently a placeholder — no model files are bundled.
@@ -84,3 +84,13 @@ VisionApp (exe)  --QLibrary/dlopen at runtime-->  VisionCore (shared lib: Vision
 ### Code conventions
 
 C++17, `namespace vision { }`, `#pragma once` guards, `PascalCase.h`/`.cpp` files, `PascalCase` classes, `camelCase` methods, `m_camelCase` members. Smart pointers only (no raw `new`/`delete`), prefer `[[nodiscard]]`/`constexpr`/`std::optional`, no C-style casts. No platform-specific APIs without `#ifdef _WIN32` / `#ifdef __APPLE__` guards — use Qt or standard C++ instead.
+
+**Function comments use Doxygen.** Use `/** ... */` blocks with `@brief`, `@param`, and `@return` for functions in headers (and non-trivial private helpers). Simple one-line member/field annotations may still use `///` or trailing `///<`. Section banners (`// ── Name ──`) stay as plain `//` comments — they're navigation aids, not documentation.
+
+```cpp
+/**
+ * @brief Push parsed receipt data into the metadata fields, items table, and totals.
+ * @param receiptData Structured receipt data to display.
+ */
+void applyParsedReceipt(const vision::ReceiptData& receiptData);
+```
