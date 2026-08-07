@@ -194,10 +194,19 @@ void ReceiptOcrPanel::applyParsedReceipt(const vision::ReceiptData& receiptData)
     m_itemsTable->setRowCount(static_cast<int>(receiptData.items.size()));
     for (size_t i = 0; i < receiptData.items.size(); ++i) {
         const auto& item = receiptData.items[i];
-        m_itemsTable->setItem(static_cast<int>(i), 0, new QTableWidgetItem(QString::fromStdString(item.description)));
-        m_itemsTable->setItem(static_cast<int>(i), 1, new QTableWidgetItem(QString::number(item.quantity)));
-        m_itemsTable->setItem(static_cast<int>(i), 2, new QTableWidgetItem(QString::number(item.unitPrice, 'f', 2)));
-        m_itemsTable->setItem(static_cast<int>(i), 3, new QTableWidgetItem(QString::number(item.totalPrice, 'f', 2)));
+        
+        auto setOrUpdateItem = [&](int row, int col, const QString& text) {
+            if (auto* existingItem = m_itemsTable->item(row, col)) {
+                existingItem->setText(text);
+            } else {
+                m_itemsTable->setItem(row, col, new QTableWidgetItem(text));
+            }
+        };
+
+        setOrUpdateItem(static_cast<int>(i), 0, QString::fromStdString(item.description));
+        setOrUpdateItem(static_cast<int>(i), 1, QString::number(item.quantity));
+        setOrUpdateItem(static_cast<int>(i), 2, QString::number(item.unitPrice, 'f', 2));
+        setOrUpdateItem(static_cast<int>(i), 3, QString::number(item.totalPrice, 'f', 2));
     }
 
     m_subtotalSpin->setValue(receiptData.subtotal);
