@@ -19,6 +19,7 @@ Testing/
 # ── Dependencies (vcpkg) ─────────────────────────────────────────────────────
 vcpkg_installed/
 .cache/
+.tools/
 
 # ── Compiled Artifacts ───────────────────────────────────────────────────────
 *.exe
